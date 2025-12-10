@@ -69,6 +69,7 @@ export interface CommentItem {
 
 export type LanguageItemType = 'riddle' | 'idiom' | 'proverb';
 export type FeedbackCategory = 'translation' | 'meaning' | 'options' | 'context' | 'lexical';
+export type FeedbackStatus = 'pending' | 'approved' | 'rejected';
 
 export interface CategoryType {
   category: LanguageItemType;
@@ -84,6 +85,7 @@ export interface FeedbackItem {
   category: CategoryType;
   feedBackType: FeedbackType;
   message: string;
-  userEmail?: string;
+  useremail?: string;
   created_at: string;
+  status?: FeedbackStatus;
 }

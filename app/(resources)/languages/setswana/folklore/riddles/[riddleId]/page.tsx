@@ -54,7 +54,7 @@ export default function RiddleDetailPage() {
         const { data, error: supabaseError } = await supabase
           .from('language_riddles_items')
           .select('*')
-          .eq('id', '7e4c378a-2744-46ee-aff6-628b8579a4dd')
+          .eq('id',id)
           .single(); // Use single() for single record queries
 
         // Clear timeout
@@ -172,7 +172,7 @@ export default function RiddleDetailPage() {
             </li>
             <li>
               <span className="mx-2 text-muted-foreground">/</span>
-              <span className="font-medium text-foreground">Riddle #{riddle.id.slice(0, 8)}</span>
+              <span className="font-medium text-foreground">Riddle #{riddle?.id?.slice(0, 8)}</span>
             </li>
 
           </ol>

@@ -3,6 +3,7 @@ import { supabase } from '@/app/utils/supabase/supabase';
 import React, { useEffect, useState, useCallback } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/app/components/ui/alert';
 import { Loader2, AlertCircle, Database, Plus, Save, X } from 'lucide-react';
+import Link from 'next/link';
 
 // Updated interface to match the new table structure
 interface RiddleItem {
@@ -383,7 +384,7 @@ export default function RiddlePage() {
       });
 
       const fetchPromise = supabase
-        .from('language_riddles_items') // Updated table name
+        .from('language_riddles_items')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -409,7 +410,6 @@ export default function RiddlePage() {
 
       console.log(`Successfully loaded ${data.length} riddles`);
 
-      // Set riddles regardless of length - even if empty array
       setRiddles(data);
 
     } catch (err) {
@@ -500,6 +500,7 @@ export default function RiddlePage() {
       ) : (
         <div className="space-y-4">
           {riddles.map((riddle) => (
+               <Link key={riddle.id} href={`/language/languageitems/riddles/${riddle.id}`}>
             <div
               key={riddle.id}
               className="border rounded-lg p-4 hover:shadow-md transition-shadow bg-white"
@@ -555,6 +556,7 @@ export default function RiddlePage() {
                 </div>
               </div>
             </div>
+            </Link>
           ))}
         </div>
       )}

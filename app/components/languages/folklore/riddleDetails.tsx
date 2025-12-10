@@ -6,15 +6,17 @@ import React, { useState } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Alert, AlertDescription } from '@/app/components/ui/alert';
-import { Loader2, Eye, MessageSquare, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Loader2, Eye, MessageSquare, ThumbsUp, ThumbsDown, ChevronLeft } from 'lucide-react';
 // import { useFeedbackStore } from '@/store/feedback.store';
 import { RiddleItem } from '@/lib/types/folklore';
+import { AdminControls } from './feedback/adminControls';
 
 interface RiddleDetailProps {
   item: RiddleItem;
+  onBack: () => void;
 }
 
-export function RiddleDetail({ item }: RiddleDetailProps) {
+export function RiddleDetail({ item ,onBack}: RiddleDetailProps) {
   const [showAnswer, setShowAnswer] = useState(false);
   const [submittingFeedback, setSubmittingFeedback] = useState(false);
 //   const { submitFeedback } = useFeedbackStore();
@@ -36,11 +38,37 @@ export function RiddleDetail({ item }: RiddleDetailProps) {
 //     }
 //   };
 
+if (!item) {
+    return (
+      <Alert variant="destructive" className="my-4">
+        <AlertDescription>
+          Riddle not found.
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
   return (
     <Card className="mb-8">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold text-gray-900">🤔 {item.question}</CardTitle>
+      <CardHeader className="p-6 pb-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onBack}
+            className="hover:bg-gray-100"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+          <CardTitle className="text-2xl font-bold text-foreground">
+            {item.question}
+          </CardTitle>
+        </div>
+
+        {/* {isAdmin && <AdminControls riddleId={item.id} />} */}
+         <AdminControls riddleId={item.id} />
       </CardHeader>
+
       <CardContent>
         <div className="space-y-6">
           {item.context && (
@@ -92,7 +120,7 @@ export function RiddleDetail({ item }: RiddleDetailProps) {
         </div>
       </CardContent>
       <CardFooter className="flex flex-col sm:flex-row justify-between gap-4">
-        <div className="flex space-x-4">
+        {/* <div className="flex space-x-4">
           <Button
             variant="outline"
             className="flex items-center gap-2"
@@ -111,7 +139,7 @@ export function RiddleDetail({ item }: RiddleDetailProps) {
             <ThumbsDown className="h-4 w-4" />
             {submittingFeedback ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Not Helpful'}
           </Button>
-        </div>
+        </div> */}
         <Button variant="secondary" className="flex items-center gap-2">
           <MessageSquare className="h-4 w-4" />
           Share Feedback

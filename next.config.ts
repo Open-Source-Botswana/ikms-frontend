@@ -8,7 +8,8 @@ const nextConfig: NextConfig = {
   swcMinify: true,
   images: {
         domains: ['images.unsplash.com']
-  }
+  },
+  allowedDevOrigins: ['http://localhost:3000'],
 }
 
 export default nextConfig

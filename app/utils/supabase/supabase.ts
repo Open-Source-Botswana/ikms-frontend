@@ -1,4 +1,4 @@
-import { FeedbackItem } from "@/lib/types/folklore";
+import { FeedbackItem, RiddleItem } from "@/lib/types/folklore";
 import { createClient } from "@supabase/supabase-js";
 
 
@@ -17,7 +17,7 @@ export class FeedbackService {
           category: feedback.category,
           feedbacktype: feedback.feedBackType,
           message: feedback.message,
-          useremail: feedback.userEmail || null,
+          useremail: feedback.useremail || null,
         }).select().single();
 
 
@@ -77,6 +77,42 @@ export class FeedbackService {
     } catch (error) {
       console.error('Error fetching all feedback:', error);
       return [];
+    }
+  }
+
+  static async getRiddleItemById(itemId: string): Promise<any> {
+    try {
+      const { data, error } = await supabase
+        .from('language_riddles_items')
+        .select('*')
+        .eq('id', itemId)
+        .single();
+
+      if (error) throw error;
+      return data || null;
+    } catch (error) {
+      console.error('Error fetching item by ID:', error);
+      return null;
+    }
+  }
+}
+
+export class FolkloreRiddlesService {
+
+
+  static async getRiddleItemById(itemId: string): Promise<RiddleItem | null> {
+    try {
+      const { data, error } = await supabase
+        .from('language_riddles_items')
+        .select('*')
+        .eq('id', itemId)
+        .single();
+
+      if (error) throw error;
+      return data || null;
+    } catch (error) {
+      console.error('Error fetching item by ID:', error);
+      return null;
     }
   }
 }

@@ -8,7 +8,7 @@ import {
   NavigationMenuTrigger,
 } from '@/app/components/ui/navigation-menu'
 import { cn } from '@/lib/utils'
-import { memo } from 'react'
+import { memo, useState } from 'react'
 import Image from 'next/image'
 import LogoImg from '@/assets/partnerLogos/WeThemba.jpeg'
 import {
@@ -40,6 +40,8 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import ImageLogo from '@/assets/partnerLogos/WeThemba.jpeg'
+import { useAdmin } from '@/app/hooks/use-admin'
+import { WaitingListModal } from '@/app/components/onboading/waitingListModal'
 
 const NavLink = memo(
   ({
@@ -112,7 +114,11 @@ const ContentType = {
 }
 
 const Navigation = memo(() => {
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const { isAdmin } = useAdmin();
   return (
+    <>
+
     <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between transition-all duration-300 ease-in-out p-6 bg-transparent">
       {/* Logo */}
       <div className="flex items-center space-x-2">
@@ -577,6 +583,11 @@ const Navigation = memo(() => {
 
       {/* CTA Buttons */}
       <div className="hidden md:flex items-center space-x-4">
+         <Button className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105" onClick={() => setIsModalOpen(true)}>
+          Contact-US
+        </Button>
+
+{isAdmin && (<>
         <Button
           variant="ghost"
           className="text-slate-700 hover:text-sky-600 hover:bg-sky-50"
@@ -585,7 +596,7 @@ const Navigation = memo(() => {
         </Button>
         <Button className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
           <Link href="/sign-up">Register-Now</Link>
-        </Button>
+        </Button></>)}
       </div>
 
       {/* Mobile Menu Button */}
@@ -653,7 +664,15 @@ const Navigation = memo(() => {
         </DropdownMenuContent>
       </DropdownMenu>
     </nav>
+
+      <WaitingListModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+
+        />
+    </>
   )
+
 })
 
 Navigation.displayName = 'Navigation'

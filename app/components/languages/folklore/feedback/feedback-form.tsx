@@ -69,7 +69,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
         category: data.category,
         feedBackType: data.feedBackType,
         message: data.message,
-        userEmail: data.userEmail || undefined,
+        useremail: data.userEmail || undefined,
       });
 
       form.reset({

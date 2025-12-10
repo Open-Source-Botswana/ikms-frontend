@@ -5,8 +5,9 @@ const nextConfig = {
   swcMinify: true,
   productionBrowserSourceMaps: false,
   images: {
-    domains: ['images.unsplash.com']
-  }
+    domains: ['images.unsplash.com',]
+  },
+  allowedDevOrigins: ['http://localhost:3000'],
 };
 
 export default nextConfig;
