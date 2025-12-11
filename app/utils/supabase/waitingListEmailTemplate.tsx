@@ -74,11 +74,11 @@ export const WaitingListEmail = ({
             )}
 
             <Section className="text-center my-8">
-              <Link href="http://34.226.203.226:3000/">
-                <Button className="rounded-lg bg-brand px-6 py-3 text-white text-base font-medium">
-                  Visit Our Website
-                </Button>
-              </Link>
+              <Button className="bg-[#2138c6] text-white border-0 text-[15px] leading-[18px] cursor-pointer rounded p-3" href="http://34.226.203.226:3000/">
+
+                <strong>Visit Our Site</strong>
+
+              </Button>
             </Section>
 
             {supportLinks.length > 0 && (
@@ -88,7 +88,7 @@ export const WaitingListEmail = ({
                     <Column key={link.title}>
                       <Link
                         href={link.href}
-                        className="text-black font-semibold underline"
+                        className="text-black font-semibold underline mr-6"
                       >
                         {link.title}
                       </Link>
@@ -109,7 +109,7 @@ export const WaitingListEmail = ({
             <Text className="text-xs mt-4">
               IKMS Project • Botswana • Empowering Indigenous Knowledge
             </Text>
-            <Text className="text-xs mt-4">• Open Source Botswana •</Text>
+            <Text className="text-md mt-4">• Open Source Botswana •</Text>
           </Container>
         </Body>
       </Tailwind>

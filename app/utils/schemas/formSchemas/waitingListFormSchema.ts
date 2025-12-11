@@ -13,3 +13,5 @@ export const WaitingListFormSchema = z.object({
   usercontact: z.string().optional(),
 
 })
+
+export type WaitingListFormData = z.infer<typeof WaitingListFormSchema>;

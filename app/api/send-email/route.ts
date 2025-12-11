@@ -23,7 +23,7 @@ export async function POST(req: Request) {
           { id: 3, text: 'Opportunities to shape the platform' },
         ],
         supportLinks: [
-          { title: 'Visit Website', href: 'http://34.226.203.226:3000/' },
+          { title: 'Language Learn', href: 'http://34.226.203.226:3000/learn' },
           { title: 'Community', href: 'http://34.226.203.226:3000/' },
         ],
       }),

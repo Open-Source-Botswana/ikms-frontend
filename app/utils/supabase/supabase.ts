@@ -1,5 +1,7 @@
 import { FeedbackItem, RiddleItem } from "@/lib/types/folklore";
 import { createClient } from "@supabase/supabase-js";
+import z from "zod";
+import { WaitingListFormData, WaitingListFormSchema } from "../schemas/formSchemas/waitingListFormSchema";
 
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -24,7 +26,7 @@ export class FeedbackService {
       if (error) throw error;
       if (!data) throw new Error('Failed to create feedback');
 
-    //   console.error('Sending this feedback:', data);
+      //   console.error('Sending this feedback:', data);
 
       return data as FeedbackItem;
     } catch (error) {
@@ -113,6 +115,39 @@ export class FolkloreRiddlesService {
     } catch (error) {
       console.error('Error fetching item by ID:', error);
       return null;
+    }
+  }
+}
+
+
+// export interface WaitingListRecord extends WaitingListFormData {
+//   id: string;
+//   created_at: string;
+// }
+
+export class WaitingListService {
+
+  static TABLE = "waiting_list";
+  static async addToWaitingList(userData: WaitingListFormData): Promise<WaitingListFormData> {
+    try {
+      const { data, error } = await supabase
+        .from(this.TABLE)
+        .insert({
+          researchpurpose: userData.researchPurpose,
+          username: userData.username,
+          organization: userData.organization,
+          interests: userData.interests,
+          useremail: userData.useremail,
+          usercontact: userData.usercontact,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as WaitingListFormData;
+    } catch (error) {
+      console.error('Error creating waiting list:', error);
+      throw error instanceof Error ? error : new Error('Failed to submit waiting list');
     }
   }
 }

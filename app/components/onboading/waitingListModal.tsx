@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { redirect } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import {
@@ -26,9 +25,7 @@ import {
 } from '../ui/select';
 import { MultiSelect } from '../ui/multi-select';
 import { Input } from '../ui/input';
-import { EmailService } from '@/app/utils/supabase/emailService';
-import { toast } from 'sonner';
-import { Resend } from 'resend';
+import { WaitingListService } from '@/app/utils/supabase/supabase';
 
 type WaitingListModalProps = {
   isOpen: boolean;
@@ -66,6 +63,10 @@ export function WaitingListModal({ isOpen, onClose }: WaitingListModalProps) {
   const onSubmit = async (data: z.infer<typeof WaitingListFormSchema>) => {
     setIsSubmitting(true);
     try {
+
+      await WaitingListService.addToWaitingList(data);
+
+
       const res = await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

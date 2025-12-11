@@ -3,7 +3,7 @@
 import { RiddlesList } from '@/app/components/languages/folklore/riddlesList'
 import { Button } from '@/app/components/ui/button'
 import { supabase } from '@/app/utils/supabase/supabase'
-import { FolkloreItem, RiddleItem } from '@/lib/types/folklore'
+import { RiddleItem } from '@/lib/types/folklore'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
