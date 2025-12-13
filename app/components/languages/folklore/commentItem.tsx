@@ -4,8 +4,9 @@ import { FeedbackItem } from '@/lib/types/folklore';
 import React, { useState } from 'react'
 import { Card, CardContent } from '../../ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
-import { CheckCircle, MessageSquare, ThumbsDown, ThumbsUp, XCircle } from 'lucide-react';
+import { CheckCircle, MessageSquare, Reply, ThumbsDown, ThumbsUp, XCircle } from 'lucide-react';
 import { Button } from '../../ui/button';
+import ReplyModal from '../../ui/modals/reply-modal';
 
 interface CommentItemProps {
   comment: FeedbackItem;
@@ -20,6 +21,7 @@ interface CommentItemProps {
 export default function CommentItem({ comment, riddleId, riddleTitle }: CommentItemProps) {
   const [loading, setLoading] = useState(false);
   const { isAdmin } = useAdmin();
+  const [showReplyModal, setShowReplyModal] = useState(false)
 
    const getStatusColor = (status: string) => {
     switch (status) {
@@ -43,8 +45,19 @@ export default function CommentItem({ comment, riddleId, riddleTitle }: CommentI
     }
   };
 
+    const handleCloseModal = () => {
+    setShowReplyModal(false)
+  }
+
+  const handleReply =()=>{
+    // Open a modal or a reply form
+    //response on the modal -> onReply(comment.id, comment, comment.email, reply_subject ,reply_message);
+    setShowReplyModal(true)
+  }
+
 
   return (
+<>
         <Card className="border-border/50 hover:shadow-md transition-shadow">
             <CardContent className="p-4">
                   <div className="flex gap-4">
@@ -82,7 +95,8 @@ export default function CommentItem({ comment, riddleId, riddleTitle }: CommentI
                 <span>2</span>
               </div>
               <button
-                onClick={() => {}}
+              // set a pop up modal
+                onClick={() => handleReply()}
                 className="flex items-center gap-1 text-sm text-primary hover:text-primary/80"
               >
                 <MessageSquare className="h-4 w-4" />
@@ -122,5 +136,9 @@ export default function CommentItem({ comment, riddleId, riddleTitle }: CommentI
 
             </CardContent>
         </Card>
+        <ReplyModal isOpen={showReplyModal} onClose={handleCloseModal} comment={comment}/>
+
+        {/* <ReplyModal isOpen={showReplyModal} onClose={()=>setShowReplyModal(false)} riddleId={riddleId} riddleTitle={riddleTitle} parentComment={comment}/> */}
+</>
   )
 }

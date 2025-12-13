@@ -7,7 +7,7 @@ const FAIR_USAGE_KEY = 'fairUsage'
 const FairUsageProvider = ({ children }: { children: React.ReactNode }) => {
   const [showModal, setShowModal] = useState(false)
 
-  const handleClodeModal = () => {
+  const handleCloseModal = () => {
     setShowModal(false)
     localStorage.setItem(FAIR_USAGE_KEY, 'true')
   }
@@ -28,7 +28,7 @@ const FairUsageProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       {children}
-      <FairUsageModal isOpen={showModal} onClose={handleClodeModal} />
+      <FairUsageModal isOpen={showModal} onClose={handleCloseModal} />
     </>
   )
 }
