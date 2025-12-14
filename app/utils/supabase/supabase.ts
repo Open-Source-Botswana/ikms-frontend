@@ -1,4 +1,4 @@
-import { FeedbackItem, RiddleItem } from "@/lib/types/folklore";
+import { FeedbackItem, FeedbackStatus, RiddleItem } from "@/lib/types/folklore";
 import { createClient } from "@supabase/supabase-js";
 import z from "zod";
 import { WaitingListFormData, WaitingListFormSchema } from "../schemas/formSchemas/waitingListFormSchema";
@@ -95,6 +95,25 @@ export class FeedbackService {
     } catch (error) {
       console.error('Error fetching item by ID:', error);
       return null;
+    }
+  }
+
+  static async updateFeedbackStatus(id: string, newstatus:FeedbackStatus): Promise<FeedbackItem> {
+    try {
+      const { data, error } = await supabase
+        .from('folklore_feedback')
+        .update({ status_enum: newstatus })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      if (!data) throw new Error('Failed to update feedback status');
+
+      return data as FeedbackItem;
+    } catch (error) {
+      console.error('Error updating feedback status:', error);
+      throw error instanceof Error ? error : new Error('Failed to update feedback status');
     }
   }
 }

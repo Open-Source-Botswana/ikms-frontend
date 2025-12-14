@@ -87,5 +87,5 @@ export interface FeedbackItem {
   message: string;
   useremail?: string;
   created_at: string;
-  status?: FeedbackStatus;
+  status_enum?: FeedbackStatus;
 }
