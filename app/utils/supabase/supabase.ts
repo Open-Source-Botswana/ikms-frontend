@@ -98,11 +98,11 @@ export class FeedbackService {
     }
   }
 
-  static async updateFeedbackStatus(id: string, newstatus:FeedbackStatus): Promise<FeedbackItem> {
+  static async updateFeedbackStatus(id: string, newstatus:FeedbackStatus, status_comment?:string): Promise<FeedbackItem> {
     try {
       const { data, error } = await supabase
         .from('folklore_feedback')
-        .update({ status_enum: newstatus })
+        .update({ status_enum: newstatus, status_comment: status_comment??null })
         .eq('id', id)
         .select()
         .single();

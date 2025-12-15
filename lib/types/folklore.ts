@@ -88,4 +88,5 @@ export interface FeedbackItem {
   useremail?: string;
   created_at: string;
   status_enum?: FeedbackStatus;
+  status_comment?: string;
 }
