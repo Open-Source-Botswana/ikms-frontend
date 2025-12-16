@@ -6,20 +6,21 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { ArrowDown, Loader2, MessageSquare } from 'lucide-react';
 import { FeedbackForm } from './feedback/feedback-form';
-import { LanguageItemType } from '@/lib/types/folklore';
+import { FeedbackItem, LanguageItemType } from '@/lib/types/folklore';
 import { toast } from '@/app/hooks/use-toast';
 import { FeedbackService } from '@/app/utils/supabase/supabase';
 import { Button } from '../../ui/button';
 import CommentItem from './commentItem';
+import { updateDoc } from 'firebase/firestore';
 
 interface CommentSectionProps {
   riddleId: string;
   riddleTitle: string;
-  riddleCategory:LanguageItemType;
+  // riddleCategory: LanguageItemType;
 }
 
-export function CommentSection({ riddleId, riddleTitle, riddleCategory }: CommentSectionProps) {
-  const [comments, setComments] = useState<any[]>([]);
+export function CommentSection({ riddleId, riddleTitle }: CommentSectionProps) {
+const [comments, setComments] = useState<FeedbackItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
@@ -90,6 +91,9 @@ export function CommentSection({ riddleId, riddleTitle, riddleCategory }: Commen
               comment={comment}
               riddleId={riddleId}
               riddleTitle={riddleTitle}
+              onStatusUpdated={(updated)=>{
+                setComments(prev=> prev.map(c=> (c.id === updated.id? updated : c)))
+              }}
             //   onReply={handleReply}
             />
           ))}

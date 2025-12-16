@@ -4,6 +4,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/app/components/ui/alert';
 import { Loader2, AlertCircle, Database, Plus, Save, X } from 'lucide-react';
 import Link from 'next/link';
+import { RiddleForm } from '@/app/components/languages/folklore/riddleForm';
+import { useRouter } from 'next/navigation';
 
 // Updated interface to match the new table structure
 interface RiddleItem {
@@ -368,6 +370,7 @@ export default function RiddlePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const router = useRouter();
 
   // Fetch riddles with proper error handling
   const fetchRiddles = useCallback(async () => {
@@ -482,17 +485,21 @@ export default function RiddlePage() {
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-6">
-      <DebugInfo />
+      {/* <DebugInfo />
 
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Riddles Management</h1>
         <p className="text-gray-600">
           Total riddles: {riddles.length}
         </p>
-      </div>
+      </div> */}
 
       {/* Add Riddle Form Section */}
-      <AddRiddleForm onRiddleAdded={handleRiddleAdded} />
+      {/* <AddRiddleForm onRiddleAdded={handleRiddleAdded} /> */}
+      <RiddleForm
+  mode="create"
+  onSuccess={() => router.refresh()}
+/>
 
       {/* Riddles List */}
       {riddles.length === 0 ? (

@@ -1,4 +1,4 @@
-import { FeedbackItem, FeedbackStatus, RiddleItem } from "@/lib/types/folklore";
+import { FeedbackItem, FeedbackStatus, RiddleFormValues, RiddleItem } from "@/lib/types/folklore";
 import { createClient } from "@supabase/supabase-js";
 import z from "zod";
 import { WaitingListFormData, WaitingListFormSchema } from "../schemas/formSchemas/waitingListFormSchema";
@@ -120,6 +120,28 @@ export class FeedbackService {
 
 export class FolkloreRiddlesService {
 
+  static async create(values: RiddleFormValues) {
+    const { data, error } = await supabase
+      .from('language_riddles_items')
+      .insert(values)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  static async update(id: string, values: RiddleFormValues) {
+    const { data, error } = await supabase
+      .from('language_riddles_items')
+      .update(values)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
 
   static async getRiddleItemById(itemId: string): Promise<RiddleItem | null> {
     try {
@@ -136,6 +158,8 @@ export class FolkloreRiddlesService {
       return null;
     }
   }
+
+
 }
 
 

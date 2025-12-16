@@ -89,4 +89,19 @@ export interface FeedbackItem {
   created_at: string;
   status_enum?: FeedbackStatus;
   status_comment?: string;
+  reply_count?: number;
+  // TODO: add more fields to identify the admin/moderator who changed status + timestamp
+
+}
+
+export type RiddleFormMode = 'create' | 'edit';
+
+export interface RiddleFormValues {
+  category: string;
+  language: string;
+  question: string;
+  answer: string;
+  context?: string;
+  usage?: string;
+  tags: string[];
 }

@@ -1,4 +1,4 @@
-// components/folklore/RiddleDetail.tsx
+
 'use client';
 
 import React, { useState } from 'react';
@@ -6,37 +6,24 @@ import React, { useState } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Alert, AlertDescription } from '@/app/components/ui/alert';
-import { Loader2, Eye, MessageSquare, ThumbsUp, ThumbsDown, ChevronLeft } from 'lucide-react';
-// import { useFeedbackStore } from '@/store/feedback.store';
+import { Loader2, Eye, MessageSquare, ThumbsUp, ThumbsDown, ChevronLeft, Pencil } from 'lucide-react';
 import { RiddleItem } from '@/lib/types/folklore';
-import { AdminControls } from './feedback/adminControls';
+
+import { useAdmin } from '@/app/hooks/use-admin';
+import { RiddleForm } from './riddleForm';
 
 interface RiddleDetailProps {
   item: RiddleItem;
   onBack: () => void;
+  onUpdate: (updated: RiddleItem) => void;
 }
 
-export function RiddleDetail({ item ,onBack}: RiddleDetailProps) {
+export function RiddleDetail({ item ,onBack,onUpdate}: RiddleDetailProps) {
   const [showAnswer, setShowAnswer] = useState(false);
   const [submittingFeedback, setSubmittingFeedback] = useState(false);
-//   const { submitFeedback } = useFeedbackStore();
+  const [isEditing, setIsEditing] = useState(false);
+  const { isAdmin } = useAdmin();
 
-//   const handleFeedback = async (type: 'helpful' | 'not_helpful') => {
-//     setSubmittingFeedback(true);
-//     try {
-//       await submitFeedback({
-//         folklore_id: item.id,
-//         feedback_type: type === 'helpful' ? 'meaning' : 'context',
-//         original_content: item.answer,
-//         suggested_content: type === 'helpful' ? 'This riddle was helpful' : 'This riddle needs improvement',
-//         rating: type === 'helpful' ? 5 : 2,
-//       });
-//     } catch (error) {
-//       console.error('Failed to submit feedback:', error);
-//     } finally {
-//       setSubmittingFeedback(false);
-//     }
-//   };
 
 if (!item) {
     return (
@@ -45,6 +32,45 @@ if (!item) {
           Riddle not found.
         </AlertDescription>
       </Alert>
+    );
+  }
+
+    if (isEditing && isAdmin) {
+    return (
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Edit Riddle</CardTitle>
+        </CardHeader>
+
+        <CardContent>
+          <RiddleForm
+            mode="edit"
+            riddleId={item.id}
+            initialData={{
+              category: item.category,
+              language: item.language,
+              question: item.question,
+              answer: item.answer,
+              context: item.context,
+              usage: item.usage,
+              tags: item.tags,
+            }}
+            onSuccess={(updatedRiddle) => {
+              onUpdate(updatedRiddle)
+              setIsEditing(false);
+            }}
+          />
+        </CardContent>
+
+        <CardFooter>
+          <Button
+            variant="ghost"
+            onClick={() => setIsEditing(false)}
+          >
+            Cancel
+          </Button>
+        </CardFooter>
+      </Card>
     );
   }
 
@@ -65,8 +91,8 @@ if (!item) {
           </CardTitle>
         </div>
 
-        {/* {isAdmin && <AdminControls riddleId={item.id} />} */}
-         <AdminControls riddleId={item.id} />
+
+
       </CardHeader>
 
       <CardContent>
@@ -108,38 +134,17 @@ if (!item) {
               <h3 className="text-xl font-bold text-gray-900 mb-2">Answer:</h3>
               <p className="text-2xl font-bold text-blue-600">{item.answer}</p>
 
-              {/* {item.hints && (
-                <div className="mt-4 p-3 bg-yellow-50 rounded-md">
-                  <p className="text-yellow-700">
-                    <span className="font-medium">Hint:</span> {Object.values(item.hints).join(', ')}
-                  </p>
-                </div>
-              )} */}
             </div>
           )}
         </div>
       </CardContent>
       <CardFooter className="flex flex-col sm:flex-row justify-between gap-4">
-        {/* <div className="flex space-x-4">
-          <Button
-            variant="outline"
-            className="flex items-center gap-2"
-            // onClick={() => {handleFeedback('helpful')}}
-            disabled={submittingFeedback}
-          >
-            <ThumbsUp className="h-4 w-4" />
-            {submittingFeedback ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Helpful'}
-          </Button>
-          <Button
-            variant="outline"
-            className="flex items-center gap-2 text-red-600 hover:text-red-700"
-            // onClick={() => handleFeedback('not_helpful')}
-            disabled={submittingFeedback}
-          >
-            <ThumbsDown className="h-4 w-4" />
-            {submittingFeedback ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Not Helpful'}
-          </Button>
-        </div> */}
+
+        {isAdmin &&
+               <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+        <Pencil className="h-4 w-4 mr-1" />
+        Edit
+      </Button>}
         <Button variant="secondary" className="flex items-center gap-2">
           <MessageSquare className="h-4 w-4" />
           Share Feedback

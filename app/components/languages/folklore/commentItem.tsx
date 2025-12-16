@@ -1,5 +1,12 @@
 /**
  * TODO:
+ * - [] View multiple moderator comments in a list ----------- next
+ * - [] Add ability to edit moderator comments
+ * - [] Add ability to delete moderator comments
+ * - [] Show moderator comments history with timestamps
+ * - [] BACKEND: Update FeedbackService to handle multiple status comments from different moderators
+ * - [] FRONTEND: Update CommentItem component to display status comments
+ * - [] FRONTEND: Update CommentItem component to allow adding/editing/deleting status comments
  * - [] Update the action buttons on approval/rejection to reflect current status + update to add message same as reply
  * - [] Add loading states to buttons to prevent multiple clicks
  * - [] Implement error handling and user feedback for status updates
@@ -7,9 +14,10 @@
  * - [] Write tests for the status update functionality
  * - [] Refactor code for better readability and maintainability
  * - [] Ensure accessibility compliance for status indicators and buttons
- * - [] Optimize performance for large number of comments
- * - [] Add functionality to view and manage replies to comments
  * - [] Integrate email notifications for status changes ------- next
+ * - [] Optimize performance for large number of comments ----------- next
+ * - [] Add functionality to filter comments by status (approved, rejected, pending)
+ * - [] Add functionality to view and manage replies to comments
  * - [] Implement pagination or lazy loading for comments section
  * - [] Add user profile links or additional user info in comments
  * - [] Create a management tooltip for editing riddles and verifying comments -------- test if update works
@@ -70,12 +78,14 @@ interface CommentItemProps {
   //   onReply: (commentId: string, message: string, userEmail?: string) => Promise<void>;
   //   onToggleReplies: () => void;
   //   isRepliesExpanded: boolean;
+  onStatusUpdated: (comment: FeedbackItem) => void;
 }
 
 export default function CommentItem({
   comment,
   riddleId,
   riddleTitle,
+  onStatusUpdated,
 }: CommentItemProps) {
   const [loading, setLoading] = useState(false);
   const { isAdmin } = useAdmin();
@@ -147,19 +157,25 @@ export default function CommentItem({
     try {
       await FeedbackService.updateFeedbackStatus(comment.id, newStatus, statusComment);
 
-      const result = await Swal.fire({
+      onStatusUpdated({
+        ...comment,
+        status_enum: newStatus,
+        status_comment: statusComment,
+      });
+
+      await Swal.fire({
         icon: 'success',
         title: 'Status Updated',
         text: 'The feedback status was updated successfully.',
-        showCancelButton: true,
-        confirmButtonText: 'Refresh view',
-        cancelButtonText: 'Stay here',
+        // showCancelButton: true,
+        // confirmButtonText: 'Refresh view',
+        // cancelButtonText: 'Stay here',
         timer: 5000,
       });
 
-      if (result.isConfirmed) {
-        router.refresh();
-      }
+      // if (result.isConfirmed) {
+      //   router.refresh();
+      // }
     } catch (error) {
       await Swal.fire({
         icon: 'error',
@@ -224,7 +240,6 @@ export default function CommentItem({
                   <ThumbsDown className="h-4 w-4" />
                   <span>2</span>
                 </div>
-                {comment.status_comment}
                 <button
                   // set a pop up modal
                   onClick={() => handleReply()}
