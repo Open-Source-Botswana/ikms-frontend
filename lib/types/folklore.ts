@@ -105,3 +105,14 @@ export interface RiddleFormValues {
   usage?: string;
   tags: string[];
 }
+
+
+export interface RiddleMetrics {
+  totalRiddles: number;
+  approvedRiddles: number;
+  pendingRiddles: number;
+  rejectedRiddles: number;
+  languagesCount: number;
+  categoriesCount: number;
+  newThisMonth: number;
+}

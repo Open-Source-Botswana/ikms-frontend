@@ -1,4 +1,7 @@
-import { FeedbackItem, FeedbackStatus, RiddleFormValues, RiddleItem } from "@/lib/types/folklore";
+import { monthlySubmissions } from './../mock/articles';
+import { categories } from './../mock/categoryStats';
+import { languageItemDifficuly } from './../../../lib/types/languages';
+import { FeedbackItem, FeedbackStatus, RiddleFormValues, RiddleItem, RiddleMetrics } from "@/lib/types/folklore";
 import { createClient } from "@supabase/supabase-js";
 import z from "zod";
 import { WaitingListFormData, WaitingListFormSchema } from "../schemas/formSchemas/waitingListFormSchema";
@@ -192,5 +195,40 @@ export class WaitingListService {
       console.error('Error creating waiting list:', error);
       throw error instanceof Error ? error : new Error('Failed to submit waiting list');
     }
+  }
+}
+
+export class RiddleMetricsService {
+
+  static async getOverviewMetrics(): Promise<RiddleMetrics> {
+
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+
+    const [
+      total, approved, pending, rejected, languages,categories, monthlySubmissions
+    ] = await Promise.all([
+      supabase.from('language_riddles_items').select('*', { count: 'exact', head: true }),
+      supabase.from('language_riddles_items').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
+      supabase.from('language_riddles_items').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+      supabase.from('language_riddles_items').select('*', { count: 'exact', head: true }).eq('status', 'rejected'),
+      supabase.from('language_riddles_items').select('language', { count: 'exact', head: true }),
+      supabase.from('language_riddles_items').select('category', { count: 'exact', head: true }),
+      supabase.from('language_riddles_items')
+      .select('*', { count: 'exact', head: true })
+      .gte('created_at', startOfMonth.toISOString()),
+    ]);
+
+
+    // if (error) throw error;
+    return {
+            totalRiddles: total.count ?? 0,
+      approvedRiddles: approved.count ?? 0,
+      pendingRiddles: pending.count ?? 0,
+      rejectedRiddles: rejected.count ?? 0,
+      languagesCount: languages.count ?? 0,
+      categoriesCount: categories.count ?? 0,
+      newThisMonth: monthlySubmissions.count ?? 0,
+    };
   }
 }

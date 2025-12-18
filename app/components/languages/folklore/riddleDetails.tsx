@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Alert, AlertDescription } from '@/app/components/ui/alert';
-import { Loader2, Eye, MessageSquare, ThumbsUp, ThumbsDown, ChevronLeft, Pencil } from 'lucide-react';
+import {  Eye, MessageSquare, ChevronLeft, Pencil } from 'lucide-react';
 import { RiddleItem } from '@/lib/types/folklore';
 
 import { useAdmin } from '@/app/hooks/use-admin';

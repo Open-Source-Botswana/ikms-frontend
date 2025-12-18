@@ -2,10 +2,20 @@
 import { supabase } from '@/app/utils/supabase/supabase';
 import React, { useEffect, useState, useCallback } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/app/components/ui/alert';
-import { Loader2, AlertCircle, Database, Plus, Save, X } from 'lucide-react';
+import { Loader2, AlertCircle, Database, Plus, Save, X, Info } from 'lucide-react';
 import Link from 'next/link';
 import { RiddleForm } from '@/app/components/languages/folklore/riddleForm';
 import { useRouter } from 'next/navigation';
+import { useAdmin } from '@/app/hooks/use-admin';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
+import { Button } from '@/app/components/ui/button';
+import RiddlesOverviewGridMetrics from '@/app/components/languages/folklore/feedback/riddleMetrics';
 
 // Updated interface to match the new table structure
 interface RiddleItem {
@@ -23,7 +33,13 @@ interface RiddleItem {
 }
 
 // Error boundary component for better error handling
-const ErrorBoundary = ({ error, onReset }: { error: Error; onReset: () => void }) => (
+const ErrorBoundary = ({
+  error,
+  onReset,
+}: {
+  error: Error;
+  onReset: () => void;
+}) => (
   <div className="max-w-2xl mx-auto p-6">
     <Alert variant="destructive" className="mb-6">
       <AlertCircle className="h-4 w-4" />
@@ -31,7 +47,8 @@ const ErrorBoundary = ({ error, onReset }: { error: Error; onReset: () => void }
       <AlertDescription>
         <p className="mb-2">{error.message}</p>
         <p className="mb-4 text-sm text-muted-foreground">
-          This could be due to network issues, database connection problems, or invalid data structure.
+          This could be due to network issues, database connection problems, or
+          invalid data structure.
         </p>
         <button
           onClick={onReset}
@@ -63,9 +80,12 @@ const EmptyState = ({ onRefresh }: { onRefresh: () => void }) => (
   <div className="max-w-2xl mx-auto p-6 text-center">
     <div className="flex flex-col items-center justify-center py-12">
       <Database className="h-12 w-12 text-gray-400 mb-4" />
-      <h3 className="text-lg font-medium text-gray-900 mb-1">No Riddles Found</h3>
+      <h3 className="text-lg font-medium text-gray-900 mb-1">
+        No Riddles Found
+      </h3>
       <p className="text-sm text-gray-500 mb-4">
-        There are no riddles in the database yet, or there might be a filtering issue.
+        There are no riddles in the database yet, or there might be a filtering
+        issue.
       </p>
       <button
         onClick={onRefresh}
@@ -81,7 +101,7 @@ const EmptyState = ({ onRefresh }: { onRefresh: () => void }) => (
 const AddRiddleForm = ({ onRiddleAdded }: { onRiddleAdded: () => void }) => {
   const [formData, setFormData] = useState({
     category: 'logic',
-    language: 'en',
+    language: 'st',
     question: '',
     answer: '',
     context: '',
@@ -159,7 +179,6 @@ const AddRiddleForm = ({ onRiddleAdded }: { onRiddleAdded: () => void }) => {
         });
         setSuccess(false);
       }, 2000);
-
     } catch (err) {
       console.error('Failed to add riddle:', err);
       setError(err instanceof Error ? err.message : 'Failed to add riddle');
@@ -168,7 +187,11 @@ const AddRiddleForm = ({ onRiddleAdded }: { onRiddleAdded: () => void }) => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -198,7 +221,10 @@ const AddRiddleForm = ({ onRiddleAdded }: { onRiddleAdded: () => void }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="category"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Category
             </label>
             <select
@@ -220,7 +246,10 @@ const AddRiddleForm = ({ onRiddleAdded }: { onRiddleAdded: () => void }) => {
           </div>
 
           <div>
-            <label htmlFor="language" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="language"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Language
             </label>
             <select
@@ -241,7 +270,10 @@ const AddRiddleForm = ({ onRiddleAdded }: { onRiddleAdded: () => void }) => {
         </div>
 
         <div>
-          <label htmlFor="question" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="question"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Question *
           </label>
           <textarea
@@ -257,7 +289,10 @@ const AddRiddleForm = ({ onRiddleAdded }: { onRiddleAdded: () => void }) => {
         </div>
 
         <div>
-          <label htmlFor="answer" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="answer"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Answer *
           </label>
           <input
@@ -273,7 +308,10 @@ const AddRiddleForm = ({ onRiddleAdded }: { onRiddleAdded: () => void }) => {
         </div>
 
         <div>
-          <label htmlFor="context" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="context"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Context (Optional)
           </label>
           <textarea
@@ -288,7 +326,10 @@ const AddRiddleForm = ({ onRiddleAdded }: { onRiddleAdded: () => void }) => {
         </div>
 
         <div>
-          <label htmlFor="usage" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="usage"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Usage/Example (Optional)
           </label>
           <textarea
@@ -303,7 +344,10 @@ const AddRiddleForm = ({ onRiddleAdded }: { onRiddleAdded: () => void }) => {
         </div>
 
         <div>
-          <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="tags"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Tags (comma-separated)
           </label>
           <input
@@ -323,15 +367,17 @@ const AddRiddleForm = ({ onRiddleAdded }: { onRiddleAdded: () => void }) => {
         <div className="flex justify-end gap-3 pt-2">
           <button
             type="button"
-            onClick={() => setFormData({
-              category: 'logic',
-              language: 'en',
-              question: '',
-              answer: '',
-              context: '',
-              usage: '',
-              tags: '',
-            })}
+            onClick={() =>
+              setFormData({
+                category: 'logic',
+                language: 'en',
+                question: '',
+                answer: '',
+                context: '',
+                usage: '',
+                tags: '',
+              })
+            }
             className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
             disabled={loading}
           >
@@ -341,11 +387,10 @@ const AddRiddleForm = ({ onRiddleAdded }: { onRiddleAdded: () => void }) => {
           <button
             type="submit"
             disabled={loading}
-            className={`px-4 py-2 rounded-md flex items-center gap-2 ${
-              loading
-                ? 'bg-blue-300 text-white cursor-not-allowed'
-                : 'bg-blue-500 text-white hover:bg-blue-600'
-            }`}
+            className={`px-4 py-2 rounded-md flex items-center gap-2 ${loading
+              ? 'bg-blue-300 text-white cursor-not-allowed'
+              : 'bg-blue-500 text-white hover:bg-blue-600'
+              }`}
           >
             {loading ? (
               <>
@@ -367,10 +412,13 @@ const AddRiddleForm = ({ onRiddleAdded }: { onRiddleAdded: () => void }) => {
 
 export default function RiddlePage() {
   const [riddles, setRiddles] = useState<RiddleItem[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
   const router = useRouter();
+  const isAdmin = useAdmin();
 
   // Fetch riddles with proper error handling
   const fetchRiddles = useCallback(async () => {
@@ -383,7 +431,10 @@ export default function RiddlePage() {
 
       // Add timeout to prevent hanging
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Request timed out after 10 seconds')), 10000);
+        setTimeout(
+          () => reject(new Error('Request timed out after 10 seconds')),
+          10000
+        );
       });
 
       const fetchPromise = supabase
@@ -391,16 +442,25 @@ export default function RiddlePage() {
         .select('*')
         .order('created_at', { ascending: false });
 
-      const { data, error: supabaseError, status, statusText } = await Promise.race([
-        fetchPromise,
-        timeoutPromise
-      ]) as any;
+      const {
+        data,
+        error: supabaseError,
+        status,
+        statusText,
+      } = (await Promise.race([fetchPromise, timeoutPromise])) as any;
 
-      console.log('Supabase response:', { data, supabaseError, status, statusText });
+      console.log('Supabase response:', {
+        data,
+        supabaseError,
+        status,
+        statusText,
+      });
 
       if (supabaseError) {
         console.error('Supabase error details:', supabaseError);
-        throw new Error(`Database error: ${supabaseError.message || 'Unknown error'}`);
+        throw new Error(
+          `Database error: ${supabaseError.message || 'Unknown error'}`
+        );
       }
 
       if (!data) {
@@ -408,25 +468,27 @@ export default function RiddlePage() {
       }
 
       if (!Array.isArray(data)) {
-        throw new Error('Invalid data format: Expected array but received something else');
+        throw new Error(
+          'Invalid data format: Expected array but received something else'
+        );
       }
 
       console.log(`Successfully loaded ${data.length} riddles`);
 
       setRiddles(data);
-
     } catch (err) {
       console.error('Failed to load riddles:', err);
 
       if (err instanceof Error) {
         setError(err);
       } else {
-        setError(new Error('An unexpected error occurred while fetching riddles'));
+        setError(
+          new Error('An unexpected error occurred while fetching riddles')
+        );
       }
 
       // Set empty array on error to clear previous data
       setRiddles([]);
-
     } finally {
       setLoading(false);
       setIsRefreshing(false);
@@ -483,86 +545,137 @@ export default function RiddlePage() {
     return <LoadingSkeleton />;
   }
 
+  if (isAdding && isAdmin) {
+    return (
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Add Riddle</CardTitle>
+        </CardHeader>
+
+        <CardContent>
+          <RiddleForm mode="create" onSuccess={() => router.refresh()} />
+        </CardContent>
+
+        <CardFooter>
+          <Button variant="ghost" onClick={() => setIsAdding(false)}>
+            Cancel
+          </Button>
+        </CardFooter>
+      </Card>
+    );
+  }
+
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-6">
-      {/* <DebugInfo />
+    <main className="container mx-auto px-4 py-6 pb-24 md:pb-6">
+      {/* <DebugInfo /> */}
 
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Riddles Management</h1>
-        <p className="text-gray-600">
-          Total riddles: {riddles.length}
-        </p>
-      </div> */}
+      <Alert className="mb-6">
+        <Info className="h-4 w-4" />
+        <AlertDescription>
+          IKMS folklore riddles are community-contributed brain teasers and
+          puzzles. They can be used to challenge your mind, entertain friends, or
+          enhance learning through fun and engaging content.
+        </AlertDescription>
+      </Alert>
 
-      {/* Add Riddle Form Section */}
-      {/* <AddRiddleForm onRiddleAdded={handleRiddleAdded} /> */}
-      <RiddleForm
-  mode="create"
-  onSuccess={() => router.refresh()}
-/>
+      {/* metrics */}
+      <RiddlesOverviewGridMetrics />
+
+      {isAdmin && (
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <Button
+            onClick={() => setIsAdding(true)}
+            className="flex items-center space-x-2"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add new Riddle</span>
+          </Button>
+
+        </div>
+      )}
 
       {/* Riddles List */}
       {riddles.length === 0 ? (
         <EmptyState onRefresh={handleRetry} />
       ) : (
-        <div className="space-y-4">
-          {riddles.map((riddle) => (
-               <Link key={riddle.id} href={`/language/languageitems/riddles/${riddle.id}`}>
-            <div
+        <div className="space-y-6">
+          {riddles.map(riddle => (
+            <Link
               key={riddle.id}
-              className="border rounded-lg p-4 hover:shadow-md transition-shadow bg-white"
+              href={`/language/languageitems/riddles/${riddle.id}`}
+              className="space-y-6 mt-4 block"
             >
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex-1">
-                  <h3 className="font-medium text-lg text-gray-900">
-                    🤔 {riddle.question?.substring(0, 60)}{riddle.question?.length > 60 ? '...' : ''}
-                  </h3>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
-                      {riddle.category}
-                    </span>
-                    <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
-                      {riddle.language.toUpperCase()}
-                    </span>
-                    {riddle.tags && riddle.tags.map((tag, index) => (
-                      <span key={index} className="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">
-                        {tag}
+              <div
+                key={riddle.id}
+                className="border rounded-lg p-4 hover:shadow-md transition-shadow bg-white"
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex-1">
+                    <h3 className="font-medium text-lg text-gray-900">
+                      🤔 {riddle.question?.substring(0, 60)}
+                      {riddle.question?.length > 60 ? '...' : ''}
+                    </h3>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                        {riddle.category}
                       </span>
-                    ))}
+                      <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                        {riddle.language.toUpperCase()}
+                      </span>
+                      {riddle.tags &&
+                        riddle.tags.map((tag, index) => (
+                          <span
+                            key={index}
+                            className="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                    </div>
+                  </div>
+                  <span
+                    className={`px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800`}
+                  >
+                    v{riddle.version}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                  <div>
+                    <p className="text-gray-600 mb-1">
+                      <span className="font-medium">Answer:</span>{' '}
+                      {riddle.answer || 'N/A'}
+                    </p>
+                    {riddle.context && (
+                      <p className="text-gray-600 mb-1">
+                        <span className="font-medium">Context:</span>{' '}
+                        {riddle.context}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    {riddle.usage && (
+                      <p className="text-gray-600">
+                        <span className="font-medium">Usage:</span>{' '}
+                        {riddle.usage}
+                      </p>
+                    )}
                   </div>
                 </div>
-                <span className={`px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800`}>
-                  v{riddle.version}
-                </span>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                <div>
-                  <p className="text-gray-600 mb-1">
-                    <span className="font-medium">Answer:</span> {riddle.answer || 'N/A'}
-                  </p>
-                  {riddle.context && (
-                    <p className="text-gray-600 mb-1">
-                      <span className="font-medium">Context:</span> {riddle.context}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  {riddle.usage && (
-                    <p className="text-gray-600">
-                      <span className="font-medium">Usage:</span> {riddle.usage}
-                    </p>
-                  )}
+                <div className="text-xs text-gray-500 mt-3 pt-3 border-t border-gray-200">
+                  <div className="flex justify-between">
+                    <span>
+                      Created:{' '}
+                      {new Date(riddle.created_at).toLocaleDateString()}
+                    </span>
+                    <span>
+                      Updated:{' '}
+                      {new Date(riddle.updated_at).toLocaleDateString()}
+                    </span>
+                  </div>
                 </div>
               </div>
-
-              <div className="text-xs text-gray-500 mt-3 pt-3 border-t border-gray-200">
-                <div className="flex justify-between">
-                  <span>Created: {new Date(riddle.created_at).toLocaleDateString()}</span>
-                  <span>Updated: {new Date(riddle.updated_at).toLocaleDateString()}</span>
-                </div>
-              </div>
-            </div>
             </Link>
           ))}
         </div>
@@ -572,11 +685,10 @@ export default function RiddlePage() {
         <button
           onClick={handleRetry}
           disabled={isRefreshing || loading}
-          className={`px-4 py-2 rounded-md flex items-center gap-2 ${
-            isRefreshing || loading
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-blue-500 text-white hover:bg-blue-600'
-          }`}
+          className={`px-4 py-2 rounded-md flex items-center gap-2 ${isRefreshing || loading
+            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            : 'bg-blue-500 text-white hover:bg-blue-600'
+            }`}
         >
           {isRefreshing ? (
             <>
@@ -591,6 +703,6 @@ export default function RiddlePage() {
           )}
         </button>
       </div>
-    </div>
+    </main>
   );
 }

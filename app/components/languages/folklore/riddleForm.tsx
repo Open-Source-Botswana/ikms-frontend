@@ -1,10 +1,11 @@
 'use client';
 import { FolkloreRiddlesService } from "@/app/utils/supabase/supabase";
 import { RiddleFormMode, RiddleFormValues, RiddleItem } from "@/lib/types/folklore";
-import { AlertCircle, Plus, X } from "lucide-react";
+import { AlertCircle, Loader2, Plus, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../../ui/button";
 import { Alert, AlertDescription } from "../../ui/alert";
+import Swal from 'sweetalert2';
 
 interface RiddleFormProps {
   mode: RiddleFormMode;
@@ -15,7 +16,7 @@ interface RiddleFormProps {
 
 const initialState: RiddleFormValues = {
   category: 'logic',
-  language: 'en',
+  language: 'st',
   question: '',
   answer: '',
   context: '',
@@ -37,15 +38,15 @@ export function RiddleForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [tagsInput, setTagsInput] = useState(
-  initialData?.tags?.join(', ') ?? ''
-);
+    initialData?.tags?.join(', ') ?? ''
+  );
 
-const normalizeTags = (input: string): string[] => {
-  return input
-    .split(',')
-    .map(tag => tag.trim())
-    .filter(Boolean);
-};
+  const normalizeTags = (input: string): string[] => {
+    return input
+      .split(',')
+      .map(tag => tag.trim())
+      .filter(Boolean);
+  };
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -68,34 +69,55 @@ const normalizeTags = (input: string): string[] => {
       };
 
       if (mode === 'create') {
-        await FolkloreRiddlesService.create(payload);
+        const created = await FolkloreRiddlesService.create(payload);
+        await Swal.fire({
+          icon: 'success',
+          title: 'Riddle Created',
+          text: 'The riddle was created successfully.',
+          timer: 5000,
+        });
+
+        onSuccess?.(created);
       } else {
         if (!riddleId) throw new Error('Missing riddle ID');
-       const updated =  await FolkloreRiddlesService.update(riddleId, payload);
+        const updated = await FolkloreRiddlesService.update(riddleId, payload);
 
         onSuccess?.(updated);
+
+
       }
 
 
     } catch (err) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'Update Failed',
+        text: 'Something went wrong while creating riddle.',
+      });
       setError(err instanceof Error ? err.message : 'Operation failed');
     } finally {
       setLoading(false);
     }
   }
 
+  if (mode === 'create' && loading) {
     return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 min-h-screen flex items-center justify-center">
+
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className='text-lg'>Adding Riddle...</p>
+      </div>
+    )
+  }
+
+
+  return (
     <div className="bg-white rounded-lg border p-6 mb-8 shadow-md">
       <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold">
-            {mode === 'create' ? 'Add New Riddle' : 'Edit Riddle'}
-            </h2>
-        {/* {success && (
-          <div className="flex items-center gap-2 text-green-600 bg-green-50 px-3 py-1 rounded-full">
-            <span>✓</span>
-            <span>Riddle added successfully!</span>
-          </div>
-        )} */}
+        <h2 className="text-xl font-bold">
+          {mode === 'create' ? 'Add New Riddle' : 'Edit Riddle'}
+        </h2>
+
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -141,11 +163,9 @@ const normalizeTags = (input: string): string[] => {
               className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               required
             >
-              <option value="en">English</option>
-              <option value="es">Spanish</option>
-              <option value="fr">French</option>
-              <option value="de">German</option>
-              <option value="it">Italian</option>
+              <option value="st">Setswana</option>
+              <option value="kl">Kalanga</option>
+              <option value="sh">Shekgalagari</option>
             </select>
           </div>
         </div>
@@ -235,7 +255,7 @@ const normalizeTags = (input: string): string[] => {
             type="button"
             onClick={() => setFormData({
               category: 'logic',
-              language: 'en',
+              language: 'st',
               question: '',
               answer: '',
               context: '',
@@ -248,34 +268,14 @@ const normalizeTags = (input: string): string[] => {
             <X className="h-4 w-4 inline-block mr-1" />
             Clear
           </button>
-          {/* <button
-            type="submit"
-            disabled={loading}
-            className={`px-4 py-2 rounded-md flex items-center gap-2 ${
-              loading
-                ? 'bg-blue-300 text-white cursor-not-allowed'
-                : 'bg-blue-500 text-white hover:bg-blue-600'
-            }`}
-          >
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="h-4 w-4" />
-                Add Riddle
-              </>
-            )}
-          </button> */}
+
           <Button type="submit">
             {loading
-                ? 'Saving...'
-                : mode === 'create'
+              ? 'Saving...'
+              : mode === 'create'
                 ? 'Add Riddle'
                 : 'Update Riddle'}
-            </Button>
+          </Button>
         </div>
       </form>
     </div>
