@@ -2,11 +2,12 @@
 
 import { RiddlesList } from '@/app/components/languages/folklore/riddlesList'
 import { Button } from '@/app/components/ui/button'
+import { useAdmin } from '@/app/hooks/use-admin'
 import { supabase } from '@/app/utils/supabase/supabase'
 import { RiddleItem } from '@/lib/types/folklore'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import React, { useCallback, useEffect, useState } from 'react'
 
 type LessonParams = {
@@ -14,6 +15,7 @@ type LessonParams = {
 }
 export default function FolklorePage() {
       const params = useParams<LessonParams>()
+      const isAdmin = useAdmin()
       const { unitId } = params // riddles, idioms, proverbs
       const folklorelanguageId = 'en'
         const [loading, setLoading] = useState(true);
@@ -21,6 +23,8 @@ export default function FolklorePage() {
         const [isRefreshing, setIsRefreshing] = useState(false);
 
         const [riddles, setRiddles] = useState<RiddleItem[]>([]);
+
+    const router = useRouter()
 
   const fetchRiddles = useCallback(async () => {
     setLoading(true);
@@ -216,11 +220,11 @@ return (
                 )}
                 {isRefreshing ? 'Refreshing...' : 'Refresh'}
               </Button>
-              <Button asChild variant="secondary">
-                <Link href="/language/folklore">
+              <Button variant="secondary" onClick={()=>router.back()}>
+
                   <ChevronLeft className="h-4 w-4 mr-2" />
                   Back to Folklore
-                </Link>
+
               </Button>
             </div>
           </div>
@@ -246,7 +250,7 @@ return (
 
         {/* Main Content */}
         <div className="grid grid-cols-1 gap-8">
-           <DebugInfo />
+          { isAdmin && <DebugInfo />}
           {component}
         </div>
 

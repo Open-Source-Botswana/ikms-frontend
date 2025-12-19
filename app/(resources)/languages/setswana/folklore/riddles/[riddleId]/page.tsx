@@ -1,4 +1,10 @@
 // app/language/folklore/riddles/[id]/page.tsx
+
+/**
+ * [] - add a comments section
+ *
+ *
+ */
 'use client';
 
 import { supabase } from '@/app/utils/supabase/supabase';
@@ -10,13 +16,16 @@ import { Button } from '@/app/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/app/components/ui/alert';
 import { AlertCircle, ChevronLeft, Eye, MessageSquare, ThumbsUp, ThumbsDown, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { useAdmin } from '@/app/hooks/use-admin';
+import CommentsSection from '@/app/components/shared/langauges/comments-section';
 
 export default function RiddleDetailPage() {
   // const params = useParams<{ id: string }>();
   // const { id } = params;
-    const params = useParams();
+  const params = useParams();
+  const isAdmin = useAdmin()
 
-    // const siteId = params.siteId as unknown as number;
+  // const siteId = params.siteId as unknown as number;
   const id = params.riddleId as string;
 
   const [riddle, setRiddle] = useState<RiddleItem | null>(null);
@@ -37,14 +46,14 @@ export default function RiddleDetailPage() {
 
   const fetchRiddle = useCallback(async () => {
     // Don't fetch if no ID or component is unmounted
-    console.error('Fetching riddle from Supabase with ID -- Init:', id);
+
     if (!id || !isMounted.current) return;
 
     setLoading(true);
     setError(null);
 
     try {
-      console.error('Fetching riddle from Supabase with ID:', id);
+      //console.error('Fetching riddle from Supabase with ID:', id);
 
       // Create timeout controller
       const controller = new AbortController();
@@ -54,8 +63,8 @@ export default function RiddleDetailPage() {
         const { data, error: supabaseError } = await supabase
           .from('language_riddles_items')
           .select('*')
-          .eq('id',id)
-          .single(); // Use single() for single record queries
+          .eq('id', id)
+          .single();
 
         // Clear timeout
         clearTimeout(timeoutId);
@@ -112,7 +121,7 @@ export default function RiddleDetailPage() {
       setError(new Error('Invalid riddle ID'));
       setLoading(false);
     }
-  }, [id, fetchRiddle]); // Include fetchRiddle to ensure it has latest id
+  }, [id, fetchRiddle]);
 
   if (loading) {
     return (
@@ -177,7 +186,7 @@ export default function RiddleDetailPage() {
 
           </ol>
         </nav>
-          {/* <Button asChild className="w-full sm:w-auto">
+        {/* <Button asChild className="w-full sm:w-auto">
               <Link href="/language/folklore/riddles">
                 <ChevronLeft className="h-4 w-4 mr-2" />
                 Back to All Riddles
@@ -266,7 +275,7 @@ export default function RiddleDetailPage() {
           </CardContent>
 
           <CardFooter className="p-6 bg-card/50 border-t flex flex-col sm:flex-row justify-between gap-4">
-            <div className="flex space-x-4">
+            {/* <div className="flex space-x-4">
               <Button variant="outline" className="flex items-center gap-2">
                 <ThumbsUp className="h-4 w-4" />
                 Helpful (42)
@@ -275,19 +284,19 @@ export default function RiddleDetailPage() {
                 <ThumbsDown className="h-4 w-4" />
                 Not Helpful (3)
               </Button>
-            </div>
+            </div> */}
 
-             <Link href={`/languages/setswana/folklore/riddles/feedback/${riddle.id}`}>
-            <Button variant="outline">💬 Send Feedback</Button>
-          </Link>
+            <Link href={`/languages/setswana/folklore/riddles/feedback/${riddle.id}`}>
+              <Button variant="outline">💬 Send Feedback</Button>
+            </Link>
 
 
           </CardFooter>
         </Card>
 
 
-      {/* Quick Links */}
-      {/* <section className="max-w-6xl mx-auto px-4 py-12 border-t border-border">
+        {/* Quick Links */}
+        {/* <section className="max-w-6xl mx-auto px-4 py-12 border-t border-border">
         <div className="flex flex-col md:flex-row items-center justify-center gap-6">
 
           <Link href="/languages/setswana/folklore/riddles/feedback">
@@ -296,25 +305,32 @@ export default function RiddleDetailPage() {
         </div>
       </section> */}
 
+
+        <section id="comments-section">
+          <CommentsSection />
+
+        </section>
+
         {/* Related Riddles Section */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold text-foreground mb-6">More Riddles to Try</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[1, 2].map((i) => (
-              <Card key={i} className="hover:shadow-md transition-shadow cursor-pointer">
-                <CardHeader>
-                  <CardTitle className="text-lg">Another challenging riddle...</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">Try this one next to continue your riddle journey!</p>
-                </CardContent>
-                <CardFooter>
-                  <Button variant="outline" className="w-full">View Riddle</Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-        </div>
+        {isAdmin &&
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold text-foreground mb-6">More Riddles to Try</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[1, 2].map((i) => (
+                <Card key={i} className="hover:shadow-md transition-shadow cursor-pointer">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Another challenging riddle...</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">Try this one next to continue your riddle journey!</p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button variant="outline" className="w-full">View Riddle</Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          </div>}
       </div>
     </div>
   );

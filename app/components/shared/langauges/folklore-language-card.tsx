@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
 
 interface LanguageCardProps {
   lanMetadata?: LanguageMetadata
+  lanName?:string,
   className?: string
 }
 
@@ -42,17 +43,14 @@ const LanguageModalityBadge = ({ label }: { label: string }) => (
   </Badge>
 )
 
-export default function LanguageCard({
+export default function FolkloreLanguageCard({
   lanMetadata,
   className,
+  lanName
 }: LanguageCardProps) {
   const isActive = lanMetadata?.isActive
 
-  const linkUrl = lanMetadata?.id
-    ? isActive
-      ? `/languages/${lanMetadata.id}/`
-      : `/languages/${lanMetadata.id}/folklore`
-    : '/languages'
+const linkUrl = `/languages/${lanName?.toLowerCase()}/`
 
   return (
     <Link
@@ -86,71 +84,23 @@ export default function LanguageCard({
             <div>
               <CardTitle className="text-lg leading-tight group-hover:text-primary transition-colors">
                 <Link href={linkUrl} className="hover:underline">
-                  {lanMetadata?.name}
+                  {lanName}
                 </Link>
               </CardTitle>
 
-              {/* Region */}
             </div>
-            <Badge
-              variant="secondary"
-              className="shrink-0 mt-1 px-2 py-1 text-xs font-normal"
-            >
-              {lanMetadata?.languageFamily.toString()}
-            </Badge>
+
           </div>
         </CardHeader>
 
         <CardContent>
-          <div className="text-sm text-muted-foreground mb-3">
-            {lanMetadata?.description}
-          </div>
 
           <div className="flex flex-wrap gap-2 justify-center">
-            <Badge variant="outline">Variety: {lanMetadata?.variety}</Badge>
+            <Badge variant="outline">Riddles: 200</Badge>
+            <Badge variant="outline">Idioms: 200</Badge>
+            <Badge variant="outline">Proverbs: 200</Badge>
           </div>
 
-          {lanMetadata?.description && (
-            <>
-              <span>Speakers: </span>
-              <Badge
-                variant="outline"
-                className="border-amber-500 text-amber-700 dark:text-amber-300"
-              >
-                <Globe className="w-3 h-3 mr-1" />
-                {lanMetadata.totalSpeakers}
-              </Badge>
-            </>
-          )}
-          <div className="flex flex-wrap gap-2 mb-3">
-            {lanMetadata?.modality &&
-              lanMetadata.modality.map(label =>
-                label.types.map(type => (
-                  <LanguageModalityBadge key={type} label={type} />
-                ))
-              )}
-          </div>
-
-          <div className="flex flex-wrap gap-2 mb-3">
-            <span>Regions: </span>
-            {lanMetadata &&
-              lanMetadata.regions?.map(label => (
-                <LanguageRegionBadge key={label} label={label} />
-              ))}
-
-            {lanMetadata?.iso639_1 && (
-              <Link
-                href={`https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes#List`}
-                target="_blank"
-                className="inline-flex items-center text-xs text-primary hover:underline"
-              >
-                <ExternalLink className="w-3 h-3 mr-1" />
-                ISO639_1
-              </Link>
-            )}
-          </div>
-
-          {/* <AccessIndicator lanMedata={lanMetadata} /> */}
         </CardContent>
       </Card>
     </Link>
