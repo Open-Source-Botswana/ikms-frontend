@@ -1,6 +1,6 @@
 'use client';
 import { supabase } from '@/app/utils/supabase/supabase';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/app/components/ui/alert';
 import { Loader2, AlertCircle, Database, Plus, Save, X, Info } from 'lucide-react';
 import Link from 'next/link';
@@ -30,6 +30,7 @@ interface RiddleItem {
   version: number;
   created_at: string;
   updated_at: string;
+  is_deleted?:string;
 }
 
 // Error boundary component for better error handling
@@ -412,6 +413,8 @@ const AddRiddleForm = ({ onRiddleAdded }: { onRiddleAdded: () => void }) => {
 
 export default function RiddlePage() {
   const [riddles, setRiddles] = useState<RiddleItem[]>([]);
+  const [filteredItems, setFilteredItems] = useState<RiddleItem[]>([]);
+
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -475,7 +478,9 @@ export default function RiddlePage() {
 
       console.log(`Successfully loaded ${data.length} riddles`);
 
-      setRiddles(data);
+      const filterData =  data.filter(riddle => !riddle.is_deleted || riddle.is_deleted == null)
+      setRiddles(filterData);
+      // setRiddles(data);
     } catch (err) {
       console.error('Failed to load riddles:', err);
 
@@ -564,6 +569,14 @@ export default function RiddlePage() {
       </Card>
     );
   }
+
+
+  // const filtereItems = useMemo(() => {
+
+  //   return riddles.filter(riddle => !riddle.is_deleted || riddle.is_deleted == null)},[riddles])
+
+  // setFilteredItems(filteredItems)
+
 
   return (
     <main className="container mx-auto px-4 py-6 pb-24 md:pb-6">

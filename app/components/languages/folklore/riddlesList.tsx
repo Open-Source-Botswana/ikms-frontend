@@ -1,7 +1,7 @@
 // components/folklore/RiddlesList.tsx
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
@@ -70,9 +70,12 @@ export function RiddlesList({ items, loading, error, onRefresh }: RiddlesListPro
     );
   }
 
+   const filteredItems = useMemo(() => {
+     return items.filter(riddle => !riddle.is_deleted || riddle.is_deleted == null)},[items])
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {items.map((riddle) => (
+      {filteredItems.map((riddle) => (
         <Link
           key={riddle.id}
         //   href='#'

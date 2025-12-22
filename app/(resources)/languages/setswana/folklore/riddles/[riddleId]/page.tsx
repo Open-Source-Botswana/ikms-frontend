@@ -82,13 +82,13 @@ export default function RiddleDetailPage() {
           throw new Error(`Riddle not found ${id}`);
         }
 
-        // Only update state if component is still mounted
+
         if (isMounted.current) {
           setRiddle(data);
         }
 
       } catch (err) {
-        // Clear timeout on error
+
         clearTimeout(timeoutId);
 
         if (controller.signal.aborted) {

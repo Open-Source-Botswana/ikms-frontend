@@ -6,11 +6,13 @@ import React, { useState } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Alert, AlertDescription } from '@/app/components/ui/alert';
-import {  Eye, MessageSquare, ChevronLeft, Pencil } from 'lucide-react';
+import { Eye, MessageSquare, ChevronLeft, Pencil, Trash2Icon, TrashIcon } from 'lucide-react';
 import { RiddleItem } from '@/lib/types/folklore';
 
 import { useAdmin } from '@/app/hooks/use-admin';
 import { RiddleForm } from './riddleForm';
+import Swal from 'sweetalert2';
+import useDeleteRiddle from '@/app/hooks/use-delete-riddle';
 
 interface RiddleDetailProps {
   item: RiddleItem;
@@ -18,14 +20,24 @@ interface RiddleDetailProps {
   onUpdate: (updated: RiddleItem) => void;
 }
 
-export function RiddleDetail({ item ,onBack,onUpdate}: RiddleDetailProps) {
+type SwalStatus = 'success' | 'error' | 'warning';
+
+interface SwalOptions {
+  status: SwalStatus;
+  title: string;
+  text: string;
+}
+
+export function RiddleDetail({ item, onBack, onUpdate }: RiddleDetailProps) {
   const [showAnswer, setShowAnswer] = useState(false);
   const [submittingFeedback, setSubmittingFeedback] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
   const { isAdmin } = useAdmin();
+  const { deleteRiddle, isLoading } = useDeleteRiddle();
 
 
-if (!item) {
+  if (!item) {
     return (
       <Alert variant="destructive" className="my-4">
         <AlertDescription>
@@ -35,7 +47,7 @@ if (!item) {
     );
   }
 
-    if (isEditing && isAdmin) {
+  if (isEditing && isAdmin) {
     return (
       <Card className="mb-8">
         <CardHeader>
@@ -73,6 +85,31 @@ if (!item) {
       </Card>
     );
   }
+
+
+const handleRiddleDelete = async () => {
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'This riddle will be archived.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete',
+  });
+  if (!result.isConfirmed) return;
+
+  if (!item?.id) {
+    await Swal.fire({ icon: 'error', title: 'Missing ID', text: 'Riddle id unavailable.' });
+    return;
+  }
+
+  await deleteRiddle(item.id);
+
+  await Swal.fire({
+    icon: 'success',
+    title: 'Deleted',
+    text: 'Riddle successfully archived.',
+  });
+};
 
   return (
     <Card className="mb-8">
@@ -141,10 +178,21 @@ if (!item) {
       <CardFooter className="flex flex-col sm:flex-row justify-between gap-4">
 
         {isAdmin &&
-               <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
-        <Pencil className="h-4 w-4 mr-1" />
-        Edit
-      </Button>}
+
+          <>
+
+            <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+              <Pencil className="h-4 w-4 mr-1" />
+              Edit
+            </Button>
+            <Button className='from-destructive via-destructive/60 to-destructive focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 bg-transparent bg-gradient-to-r [background-size:200%_auto] text-white hover:bg-transparent hover:bg-[99%_center]
+            'onClick={handleRiddleDelete}>
+              <TrashIcon />
+              Delete
+            </Button>
+
+          </>
+        }
         <Button variant="secondary" className="flex items-center gap-2">
           <MessageSquare className="h-4 w-4" />
           Share Feedback

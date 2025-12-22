@@ -162,6 +162,11 @@ export class FolkloreRiddlesService {
     }
   }
 
+  static async softDeleteItemById(riddleId: string){
+    const {error} = await supabase.from('language_riddles_items').update({is_deleted:true}).eq('id', riddleId)
+
+    if (error) throw error
+  }
 
 }
 

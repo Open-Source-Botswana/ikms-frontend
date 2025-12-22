@@ -17,6 +17,7 @@ export interface RiddleItem extends BaseFolkloreItem {
   context?: string;
   usage?: string;
   tags: string[];
+  is_deleted?: boolean;
 //   hints?: {
 //     deleteLetters?: number;
 //     revealLetter?: number[];
