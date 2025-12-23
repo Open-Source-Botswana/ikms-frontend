@@ -179,9 +179,10 @@ const handleRiddleDelete = async () => {
 
         {isAdmin &&
 
-          <>
+          <div className='flex gap-2'>
 
-            <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+            <Button variant="outline" size="default" onClick={() => setIsEditing(true)}>
+
               <Pencil className="h-4 w-4 mr-1" />
               Edit
             </Button>
@@ -191,7 +192,7 @@ const handleRiddleDelete = async () => {
               Delete
             </Button>
 
-          </>
+          </div>
         }
         <Button variant="secondary" className="flex items-center gap-2">
           <MessageSquare className="h-4 w-4" />

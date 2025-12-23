@@ -19,6 +19,7 @@ import * as React from 'react';
 interface RiddleReplyEmailProps {
   // useremail?:string;
   commentId?: string;
+  status?: string;
   commentReference?: string;
   replyComment?: string;
   nextSteps?: { id: number; text: string }[];
@@ -28,6 +29,7 @@ interface RiddleReplyEmailProps {
 export const RiddleReplyEmail = ({
   // useremail = 'Friend',
   commentId = '',
+  status ='',
   replyComment = '',
   commentReference = 'Please refer to the original comment or contact support for more details.',
   nextSteps = [],
@@ -70,12 +72,15 @@ export const RiddleReplyEmail = ({
             <Text className="text-gray-700 mb-6">
               Reference Comment: {commentReference}
             </Text>
+            <Text className="text-gray-700 mb-6">
+              Your feedback has been {status === 'approved' ? 'Approved' : 'Reviewed'}
+            </Text>
 
             <Text className="text-gray-700 mb-6">Support Feedback:</Text>
 
             <Section className="bg-[rgb(245,244,245)] rounded mb-[30px] py-10 px-[10px]">
               <Text className="text-xl leading-[24px] text-center align-middle">
-                {replyComment}
+                {replyComment || 'No additional comments provided.'}
               </Text>
             </Section>
 

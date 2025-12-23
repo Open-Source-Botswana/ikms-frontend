@@ -1,6 +1,8 @@
 /**
  * TODO:
  * - [] View multiple moderator comments in a list ----------- next
+ * - [*] Integrate email notifications for status changes ------- done
+ * - [] Ensure that buttons active according to status ----------- next
  * - [] Add ability to edit moderator comments
  * - [] Add ability to delete moderator comments
  * - [] Show moderator comments history with timestamps
@@ -14,7 +16,7 @@
  * - [] Write tests for the status update functionality
  * - [] Refactor code for better readability and maintainability
  * - [] Ensure accessibility compliance for status indicators and buttons
- * - [] Integrate email notifications for status changes ------- next
+ *
  * - [] Optimize performance for large number of comments ----------- next
  * - [] Add functionality to filter comments by status (approved, rejected, pending)
  * - [] Add functionality to view and manage replies to comments
@@ -69,6 +71,9 @@ import ReplyModal from '../../ui/modals/reply-modal';
 import { FeedbackService } from '@/app/utils/supabase/supabase';
 import Swal from 'sweetalert2';
 import { useRouter } from 'next/navigation';
+import { useFeedbackModeration } from '@/app/hooks/use-feedback-moderation';
+import VettingModal from '../../ui/modals/vetting-modal';
+import { FeedbackLoadingOverlay } from '../../shared/feedback-overlay';
 
 
 interface CommentItemProps {
@@ -90,7 +95,16 @@ export default function CommentItem({
   const [loading, setLoading] = useState(false);
   const { isAdmin } = useAdmin();
   const [showReplyModal, setShowReplyModal] = useState(false);
+  const [modalStatus, setModalStatus] = useState<FeedbackStatus | null>(null);
   const router = useRouter();
+
+
+
+  const { moderate, isloading } = useFeedbackModeration(
+    comment,
+    onStatusUpdated
+  );
+
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -106,43 +120,43 @@ export default function CommentItem({
   };
 
   const promptForStatusComment = async (
-  status: FeedbackStatus
-): Promise<string | null> => {
-  const result = await Swal.fire({
-    title: `${status === 'approved' ? 'Approve' : 'Reject'} Feedback`,
-    text: 'Optional: Add a comment explaining this decision',
-    input: 'textarea',
-    inputPlaceholder: 'Add a moderation note (optional)...',
-    inputAttributes: {
-      maxlength: '500',
-    },
-    showCancelButton: true,
-    confirmButtonText: 'Confirm',
-    cancelButtonText: 'Cancel',
-  });
-
-  if (!result.isConfirmed) return null;
-
-  return result.value?.trim() || null;
-};
-
-  const confirmStatusChange = async (status: FeedbackStatus) => {
+    status: FeedbackStatus
+  ): Promise<string | null> => {
     const result = await Swal.fire({
-      title: ` ${status === 'approved' ? 'Approve' : 'Reject'} Feedback`,
+      title: `${status === 'approved' ? 'Approve' : 'Reject'} Feedback`,
       text: 'Optional: Add a comment explaining this decision',
       input: 'textarea',
       inputPlaceholder: 'Add a moderation note (optional)...',
       inputAttributes: {
         maxlength: '500',
       },
-      icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Confirm',
       cancelButtonText: 'Cancel',
     });
 
+    if (!result.isConfirmed) return null;
+
     return result.value?.trim() || null;
   };
+
+  // const confirmStatusChange = async (status: FeedbackStatus) => {
+  //   const result = await Swal.fire({
+  //     title: ` ${status === 'approved' ? 'Approve' : 'Reject'} Feedback`,
+  //     text: 'Optional: Add a comment explaining this decision',
+  //     input: 'textarea',
+  //     inputPlaceholder: 'Add a moderation note (optional)...',
+  //     inputAttributes: {
+  //       maxlength: '500',
+  //     },
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Confirm',
+  //     cancelButtonText: 'Cancel',
+  //   });
+
+  //   return result.value?.trim() || null;
+  // };
 
   const handleStatusChange = async (newStatus: FeedbackStatus) => {
     if (loading) return;
@@ -151,8 +165,8 @@ export default function CommentItem({
     // if (!confirmed) return;
 
 
-      const statusComment = await promptForStatusComment(newStatus);
-      if (statusComment === null) return;
+    const statusComment = await promptForStatusComment(newStatus);
+    if (statusComment === null) return;
     setLoading(true);
     try {
       await FeedbackService.updateFeedbackStatus(comment.id, newStatus, statusComment);
@@ -167,9 +181,6 @@ export default function CommentItem({
         icon: 'success',
         title: 'Status Updated',
         text: 'The feedback status was updated successfully.',
-        // showCancelButton: true,
-        // confirmButtonText: 'Refresh view',
-        // cancelButtonText: 'Stay here',
         timer: 5000,
       });
 
@@ -195,6 +206,20 @@ export default function CommentItem({
   const handleReply = () => {
     setShowReplyModal(true);
   };
+
+   const handleSubmit = async (note: string) => {
+    if (!modalStatus) return;
+
+    // ✅ Close modal immediately
+    setModalStatus(null);
+
+    // ✅ Then trigger moderation (overlay will appear)
+    await moderate({
+      status: modalStatus,
+      comment: note,
+    });
+  };
+
 
   return (
     <>
@@ -225,29 +250,29 @@ export default function CommentItem({
                 >
                   {comment.status_enum &&
                     comment.status_enum?.charAt(0).toUpperCase() +
-                      comment.status_enum?.slice(1)}
+                    comment.status_enum?.slice(1)}
                 </span>
               </div>
 
               <p className="text-gray-700 mb-3">{comment.message}</p>
 
               <div className="flex items-center gap-4 mb-3">
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                {/* <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   <ThumbsUp className="h-4 w-4" />
                   <span>24</span>
                 </div>
                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   <ThumbsDown className="h-4 w-4" />
                   <span>2</span>
-                </div>
-                <button
-                  // set a pop up modal
-                  onClick={() => handleReply()}
+                </div> */}
+                {/* <button
+                  onClick={() => handleReply()
+                  }
                   className="flex items-center gap-1 text-sm text-primary hover:text-primary/80"
                 >
                   <MessageSquare className="h-4 w-4" />
                   Reply
-                </button>
+                </button> */}
               </div>
 
               {isAdmin && comment.status_comment && (
@@ -265,7 +290,8 @@ export default function CommentItem({
                     variant={
                       comment.status_enum === 'approved' ? 'default' : 'outline'
                     }
-                    onClick={() => handleStatusChange('approved')}
+                    // onClick={() => handleStatusChange('approved')}
+                    onClick={() => setModalStatus('approved')}
                     disabled={loading}
                   >
                     <CheckCircle className="h-4 w-4 mr-1" />
@@ -278,7 +304,8 @@ export default function CommentItem({
                         ? 'destructive'
                         : 'outline'
                     }
-                    onClick={() => handleStatusChange('rejected')}
+                    // onClick={() => handleStatusChange('rejected')}
+                    onClick={() => setModalStatus('rejected')}
                     disabled={loading}
                   >
                     <XCircle className="h-4 w-4 mr-1" />
@@ -294,6 +321,21 @@ export default function CommentItem({
         isOpen={showReplyModal}
         onClose={handleCloseModal}
         comment={comment}
+      />
+      {isloading && (
+        <FeedbackLoadingOverlay label="Updating feedback & notifying user..." />
+      )}
+      <VettingModal
+        isOpen={!!modalStatus}
+        status={modalStatus}
+        comment={comment}
+        onClose={() => setModalStatus(null)}
+        onSubmit={handleSubmit}
+        // onSubmit={async note => {
+        //   if (!modalStatus) return;
+        //   await moderate({ status: modalStatus, comment: note });
+        //   setModalStatus(null);
+        // }}
       />
 
       {/* <ReplyModal isOpen={showReplyModal} onClose={()=>setShowReplyModal(false)} riddleId={riddleId} riddleTitle={riddleTitle} parentComment={comment}/> */}

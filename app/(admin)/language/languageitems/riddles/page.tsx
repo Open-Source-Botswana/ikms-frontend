@@ -504,25 +504,24 @@ export default function RiddlePage() {
   useEffect(() => {
     fetchRiddles();
 
-    // Cleanup function
     return () => {
       console.log('Component unmounted, cleaning up...');
     };
   }, [fetchRiddles]);
 
-  // Handle retry
+
   const handleRetry = () => {
     if (!isRefreshing) {
       fetchRiddles();
     }
   };
 
-  // Handle riddle added event
+
   const handleRiddleAdded = () => {
-    fetchRiddles(); // Refresh the list after adding a new riddle
+    fetchRiddles();
   };
 
-  // Debug information component
+
   const DebugInfo = () => {
     if (process.env.NODE_ENV === 'development') {
       return (
@@ -540,12 +539,11 @@ export default function RiddlePage() {
     return null;
   };
 
-  // Handle error boundary
   if (error) {
     return <ErrorBoundary error={error} onReset={handleRetry} />;
   }
 
-  // Show loading skeleton
+
   if (loading) {
     return <LoadingSkeleton />;
   }
