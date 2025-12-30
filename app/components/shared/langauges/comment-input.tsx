@@ -100,7 +100,7 @@ export function CommentInput({
           </div> */}
 
           {/* Right side actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 ml-auto">
             <Button
               variant="ghost"
               size="sm"
