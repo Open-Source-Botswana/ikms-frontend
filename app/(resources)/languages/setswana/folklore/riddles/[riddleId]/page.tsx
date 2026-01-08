@@ -18,6 +18,7 @@ import { AlertCircle, ChevronLeft, Eye, MessageSquare, ThumbsUp, ThumbsDown, Loa
 import Link from 'next/link';
 import { useAdmin } from '@/app/hooks/use-admin';
 import CommentsSection from '@/app/components/shared/langauges/comments-section';
+import FolkloreCommentsSection from '@/app/components/shared/langauges/folklore-comments-section';
 
 export default function RiddleDetailPage() {
   // const params = useParams<{ id: string }>();
@@ -306,8 +307,13 @@ export default function RiddleDetailPage() {
       </section> */}
 
 
-        <section id="comments-section">
+        {/* <section id="comments-section">
           <CommentsSection />
+
+        </section> */}
+
+        <section id="folklore-comments-section">
+          <FolkloreCommentsSection />
 
         </section>
 

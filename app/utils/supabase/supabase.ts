@@ -5,7 +5,7 @@ import { FeedbackItem, FeedbackStatus, RiddleFormValues, RiddleItem, RiddleMetri
 import { createClient } from "@supabase/supabase-js";
 import z from "zod";
 import { WaitingListFormData, WaitingListFormSchema } from "../schemas/formSchemas/waitingListFormSchema";
-
+import { FolkloreComment } from '@/lib/types/comments';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
@@ -235,5 +235,27 @@ export class RiddleMetricsService {
       categoriesCount: categories.count ?? 0,
       newThisMonth: monthlySubmissions.count ?? 0,
     };
+  }
+}
+
+/**
+ * Comment Service
+ */
+
+export class FolkloreCommentsService {
+  // getCommentsByItemId
+  static async getCommentsByItemId(itemId: string): Promise<FolkloreComment[]> {
+    try {
+      const { data, error } = await supabase
+        .from('folklore_comments')
+        .select('*')
+        .eq('item_id', itemId)
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching comments by item ID:', error);
+      return [];
+    }
   }
 }

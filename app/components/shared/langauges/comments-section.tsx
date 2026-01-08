@@ -91,7 +91,7 @@ function CommentItem({
 
     return (
         <div className="relative">
-            {comment.replies.length > 0 && !isCollapsed && (
+            {(comment.replies && comment.replies.length > 0) && !isCollapsed && (
                 <div
                     className={`absolute ${isConnectorHovered ? "bg-black" : "bg-border"}`}
                     style={{
