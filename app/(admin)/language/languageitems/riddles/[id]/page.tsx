@@ -53,14 +53,12 @@ export default function RiddleDetailView() {
     <div className="min-h-screen bg-background py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* Display the riddle details component */}
+
         <RiddleDetail item={riddle!} onUpdate={setRiddle} onBack={()=>router.back()}/>
-        {/* Display the comments - pagenated */}
+
         <div className="mt-12 space-y-4">
             <CommentSection riddleId={id} riddleTitle={riddle.question} />
         </div>
-        {/* create a management tool tip to edit riddle, verify comment as valid or unvalid */}
-        {/* create a function to reply and an email is sent */}
 
         </div>
     </div>

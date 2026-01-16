@@ -17,8 +17,9 @@ import { Alert, AlertDescription, AlertTitle } from '@/app/components/ui/alert';
 import { AlertCircle, ChevronLeft, Eye, MessageSquare, ThumbsUp, ThumbsDown, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useAdmin } from '@/app/hooks/use-admin';
-import CommentsSection from '@/app/components/shared/langauges/comments-section';
-import FolkloreCommentsSection from '@/app/components/shared/langauges/folklore-comments-section';
+
+import FolkloreCommentsSection from '@/app/components/shared/langauges/folklore/folklore-comments-section';
+// import FolkloreCommentsSection from '@/app/components/shared/langauges/folklore-comments-section-2';
 
 export default function RiddleDetailPage() {
   // const params = useParams<{ id: string }>();

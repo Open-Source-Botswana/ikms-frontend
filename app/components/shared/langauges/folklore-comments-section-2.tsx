@@ -1,9 +1,40 @@
-import React, { useState } from 'react'
+/**
+ * [] Folklore Comments Section Component
+ * [] New comments should be uploaded to Supabase
+ * [] Comments should be fetched from Supabase - with replies
+ * [] Allow editing and replying to comments
+ * [] Upvote and downvote comments
+ * [] Collapse and expand comment threads
+ * [] Pagenation for comments if more than 10 parent comments
+ * [] Display metrics such as number of comments, upvotes, downvotes
+ * [] Handle loading and error states
+ * [] Styling and UI/UX improvements
+ *
+ * This component displays a comments section for folklore items, allowing users to view,
+ * add, edit, and reply to comments in a nested structure.
+ * It includes features such as upvoting/downvoting comments,
+ * collapsing/expanding comment threads, and editing comments.
+ * The component is designed to be reusable and can be integrated into various parts of the application.
+ * It uses state management to handle comment data and user interactions.
+ * The component also includes a comment input area for adding new comments.
+ *
+ * [-] @/hooks/use-moderation';
+ * [-] ./admin-moderation-panel';
+ *
+ * [-] './moderation-actions';
+ *
+ */
+
+import React, { useCallback, useEffect, useState } from 'react'
 import { CommentInput } from './comment-input'
 import { Card } from '../../ui/card'
 import { Award, Check, Edit, MessageCircle, MessageSquare, MoreHorizontal, Share, X } from 'lucide-react'
 import { Button } from '../../ui/button'
 import { Textarea } from '../../ui/textarea'
+import { FolkloreCommentsService } from '@/app/utils/supabase/supabase'
+import { useParams } from 'next/navigation'
+import { FolkloreComment } from '@/lib/types/comments'
+
 
 
 interface Comment {
@@ -13,18 +44,18 @@ interface Comment {
     replies: Comment[]
     createdAt: Date | null
     votes: number
-    avatar: string
+    avatar?: string
 }
 
 interface CommentItemProps {
-    comment: Comment
+    comment: FolkloreComment
     onEdit: (id: string, content: string) => void
     onReply: (parentId: string, content: string) => void
     level: number
     isLast: boolean
     hasNextSibling: boolean
     parentConnectorHovered?: boolean
-    getTimeDisplay: (comment: Comment) => string
+    getTimeDisplay: (comment: FolkloreComment) => string
     userAvatar: string
 }
 
@@ -91,7 +122,7 @@ function CommentItem({
 
     return (
         <div className="relative">
-            {(comment.replies && comment.replies.length > 0) && !isCollapsed && (
+            {(comment.replies && comment.replies.length > 0 )&& !isCollapsed && (
                 <div
                     className={`absolute ${isConnectorHovered ? "bg-black" : "bg-border"}`}
                     style={{
@@ -130,23 +161,23 @@ function CommentItem({
                             </div>
                         ) : (
                             <img
-                                src={comment.avatar || "/placeholder.svg?height=40&width=40"}
-                                alt={`${comment.author}'s avatar`}
+                                src={"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"}
+                                alt={`${comment.author_id}'s avatar`}
                                 className="w-10 h-10 rounded-full object-cover"
                             />
                         )}
                     </div>
 
-
+                    {/* Comment text or edit form */}
                     <div className="flex-1 min-w-0" style={{ paddingTop: "8px" }}>
                         {/* Header */}
                         <div className="flex items-center gap-2 mb-2">
-                            <span className="text-sm font-medium text-foreground">{comment.author}</span>
+                            <span className="text-sm font-medium text-foreground">{comment.author_id}</span>
                             <span className="text-muted-foreground">•</span>
                             <span className="text-muted-foreground text-sm">{getTimeDisplay(comment)}</span>
                         </div>
 
-
+                        {/* Comment text or edit form */}
                         {isEditing ? (
                             <div className="space-y-2 mb-3">
                                 <Textarea
@@ -170,10 +201,10 @@ function CommentItem({
                             !isCollapsed && <div className="text-foreground text-sm mb-1 whitespace-pre-wrap">{comment.content}</div>
                         )}
 
-
+                        {/* Actions */}
                         {!isCollapsed && (
                             <div className="flex items-center gap-1 relative" style={{ marginLeft: "-10px" }}>
-                                {comment.replies.length > 0 && (
+                                { (comment.replies && comment.replies.length > 0) && (
                                     <div
                                         className="absolute cursor-pointer z-10"
                                         style={{ left: "-30px", top: "8px" }}
@@ -204,6 +235,7 @@ function CommentItem({
                                     <DownvoteIcon />
                                 </Button>
 
+                                {/* Action buttons */}
                                 <Button
                                     variant="ghost"
                                     size="sm"
@@ -213,22 +245,8 @@ function CommentItem({
                                     <MessageCircle className="w-4 h-4 mr-1" />
                                     Reply
                                 </Button>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground"
-                                >
-                                    <Award className="w-4 h-4 mr-1" />
-                                    Award
-                                </Button>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground"
-                                >
-                                    <Share className="w-4 h-4 mr-1" />
-                                    Share
-                                </Button>
+
+
                                 <Button
                                     variant="ghost"
                                     size="sm"
@@ -237,16 +255,17 @@ function CommentItem({
                                 >
                                     <Edit className="w-4 h-4" />
                                 </Button>
-                                <Button
+                                {/* <Button
                                     variant="ghost"
                                     size="sm"
                                     className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground"
                                 >
                                     <MoreHorizontal className="w-4 h-4" />
-                                </Button>
+                                </Button> */}
                             </div>
                         )}
 
+                        {/* Reply Input */}
                         {isReplying && !isCollapsed && (
                             <div className="mt-4">
                                 <CommentInput
@@ -262,7 +281,7 @@ function CommentItem({
             </div>
 
             {/* Nested Replies */}
-            {comment.replies.length > 0 && !isCollapsed && (
+            {(comment.replies && comment.replies.length > 0) && !isCollapsed && (
                 <div className="ml-8 space-y-0">
                     {comment.replies.map((reply, index) => (
                         <CommentItem
@@ -271,8 +290,8 @@ function CommentItem({
                             onEdit={onEdit}
                             onReply={onReply}
                             level={level + 1}
-                            isLast={index === comment.replies.length - 1}
-                            hasNextSibling={index < comment.replies.length - 1}
+                            isLast={index === (comment.replies?.length ?? 0) - 1}
+                            hasNextSibling={index < (comment.replies?.length ?? 0) - 1}
                             parentConnectorHovered={isConnectorHovered}
                             getTimeDisplay={getTimeDisplay}
                             userAvatar={userAvatar}
@@ -286,14 +305,57 @@ function CommentItem({
 
 
 
-export default function CommentsSection() {
+export default function FolkloreCommentsSection() {
+      const params = useParams();
+      //const isAdmin = useAdmin()
 
-    const [comments, setComments] = useState<Comment[]>([])
+      // const siteId = params.siteId as unknown as number;
+      const id = params.riddleId as string;
+
+
+    const [folkloreComments, setFolkloreComments] = useState<FolkloreComment[]>([])
+    const [isLoading, setIsLoading] = useState(false);
+
+        const fetchFolkloreComments = useCallback(async () => {
+            if (!id) return null;
+            setIsLoading(true);
+            try {
+              const res = await FolkloreCommentsService.getCommentsByItemId(id);
+            //   filter out parent comments only
+              const parentComments = res.filter(comment => !comment.parent_id);
+            // set replies for each parent comment
+              parentComments.forEach(parentComment => {
+                  parentComment.replies = res.filter(comment => comment.parent_id === parentComment.id);
+              });
+
+              setFolkloreComments(parentComments);
+            } catch (error) {
+              console.error('Error fetching riddle:', error);
+            } finally {
+              setIsLoading(false);
+            }
+        },[id])
+
+
+        useEffect(() => {
+            fetchFolkloreComments();
+        }, [folkloreComments]);
+
+
+    // load comments from API - placeholder data for now
+    useEffect(() => {
+        // Simulate API call
+        const fetchComments = async () => {
+            // await api.getComments()
+            //   .then(setComments)
+        }
+        fetchComments()
+    }, [])
 
 
     const USER_AVATAR = "https://plus.unsplash.com/premium_photo-1671656349322-41de944d259b?w=40&h=40&fit=crop&crop=face"
-    const getTimeDisplay = (comment: Comment) => {
-        if (comment.createdAt) {
+    const getTimeDisplay = (comment: FolkloreComment) => {
+        if (comment.created_at) {
             return "Just now"
         }
 
@@ -310,73 +372,85 @@ export default function CommentsSection() {
     }
 
     const handleAddNewComment = (content: string) => {
-        const comment: Comment = {
+        const comment: FolkloreComment = {
             id: generateId(),
             content,
-            author: "You",
+            author_name: "You",
+            author_id: "current-user-id",
             replies: [],
-            createdAt: new Date(),
+            created_at: new Date(),
             votes: Math.floor(Math.random() * 50),
             avatar: USER_AVATAR,
+            parent_id: null,
+            item_id: id,
+            is_deleted: false,
+            is_moderated: false,
+            updated_at: null,
         }
-        setComments((prev) => [comment, ...prev])
+        setFolkloreComments((prev) => [comment, ...prev])
 
     }
 
     const generateId = () => Math.random().toString(36).substr(2, 9)
 
-    const findCommentById = (comments: Comment[], id: string): Comment | null => {
+    const findCommentById = (comments: FolkloreComment[], id: string): FolkloreComment | null => {
         for (const comment of comments) {
             if (comment.id === id) return comment
-            const found = findCommentById(comment.replies, id)
+            const found = findCommentById(comment.replies || [], id)
             if (found) return found
         }
         return null
     }
 
-    const updateCommentInTree = (comments: Comment[], id: string, content: string): Comment[] => {
+    const updateCommentInTree = (comments: FolkloreComment[], id: string, content: string): FolkloreComment[] => {
         return comments.map((comment) => {
             if (comment.id === id) {
                 return { ...comment, content }
             }
             return {
                 ...comment,
-                replies: updateCommentInTree(comment.replies, id, content),
+                replies: updateCommentInTree(comment.replies || [], id, content),
             }
         })
     }
 
-    const addReplyToComment = (comments: Comment[], parentId: string, content: string): Comment[] => {
+    const addReplyToComment = (comments: FolkloreComment[], parentId: string, content: string): FolkloreComment[] => {
         return comments.map((comment) => {
             if (comment.id === parentId) {
-                const newReply: Comment = {
+                const newReply: FolkloreComment = {
                     id: generateId(),
-                    content,
-                    author: "You",
+                    author_id: "current-user-id",
+                    parent_id: parentId,
+                    item_id: id,
+                    is_deleted: false,
+                    is_moderated: false,
+                    content: content,
+                    author_name: "You",
                     replies: [],
-                    createdAt: new Date(),
+                    created_at: new Date(),
                     votes: Math.floor(Math.random() * 50),
                     avatar: USER_AVATAR,
+                    updated_at: null,
                 }
                 return {
                     ...comment,
-                    replies: [newReply, ...comment.replies],
+                    replies: [newReply, ...(comment.replies || [])],
                 }
             }
             return {
                 ...comment,
-                replies: addReplyToComment(comment.replies, parentId, content),
+                replies: addReplyToComment(comment.replies || [], parentId, content),
             }
         })
     }
 
 
     const handleEditComment = (id: string, content: string) => {
-        setComments((prev) => updateCommentInTree(prev, id, content))
+        setFolkloreComments((prev) => updateCommentInTree(prev, id, content))
     }
 
     const handleReplyToComment = (parentId: string, content: string) => {
-        setComments((prev) => addReplyToComment(prev, parentId, content))
+        setFolkloreComments((prev) => addReplyToComment(prev, parentId, content))
     }
 
     return (
@@ -385,21 +459,21 @@ export default function CommentsSection() {
             <div className="max-w-4xl mx-auto">
                 <div className="mb-8"></div>
 
-
+                {/* Add New Comment */}
                 <div className="mb-6">
                     <CommentInput placeholder="What are your thoughts?" onSubmit={handleAddNewComment} userAvatar={USER_AVATAR} />
                 </div>
 
                 <div className="space-y-0 overflow-clip">
-                    {comments.map((comment, index) => (
+                    {folkloreComments.map((comment, index) => (
                         <CommentItem
                             key={comment.id}
                             comment={comment}
                             onEdit={handleEditComment}
                             onReply={handleReplyToComment}
                             level={0}
-                            isLast={index === comments.length - 1}
-                            hasNextSibling={index < comments.length - 1}
+                            isLast={index === folkloreComments.length - 1}
+                            hasNextSibling={index < folkloreComments.length - 1}
                             parentConnectorHovered={false}
                             getTimeDisplay={getTimeDisplay}
                             userAvatar={USER_AVATAR}
@@ -407,7 +481,7 @@ export default function CommentsSection() {
                     ))}
                 </div>
 
-                {comments.length === 0 && (
+                {folkloreComments.length === 0 && (
                     <Card className="p-8 text-center">
                         <MessageSquare className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                         <p className="text-sm text-muted-foreground">No comments yet. Add the first comment above!</p>
