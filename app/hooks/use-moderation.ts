@@ -224,7 +224,7 @@ export function useCommentVisibility(isAdmin: boolean = false) {
 
       // Hide moderated comments from regular users
       if (comment.is_moderated && !isAdmin) {
-        return false;
+        return true;
       }
 
       // Admins can see everything

@@ -298,14 +298,7 @@ export default function RiddleDetailPage() {
 
 
         {/* Quick Links */}
-        {/* <section className="max-w-6xl mx-auto px-4 py-12 border-t border-border">
-        <div className="flex flex-col md:flex-row items-center justify-center gap-6">
 
-          <Link href="/languages/setswana/folklore/riddles/feedback">
-            <Button variant="outline">💬 Send Feedback</Button>
-          </Link>
-        </div>
-      </section> */}
 
 
         {/* <section id="comments-section">
@@ -319,7 +312,7 @@ export default function RiddleDetailPage() {
         </section>
 
         {/* Related Riddles Section */}
-        {isAdmin &&
+        {/* {isAdmin &&
           <div className="mt-12">
             <h2 className="text-2xl font-bold text-foreground mb-6">More Riddles to Try</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -337,7 +330,8 @@ export default function RiddleDetailPage() {
                 </Card>
               ))}
             </div>
-          </div>}
+          </div>
+        } */}
       </div>
     </div>
   );

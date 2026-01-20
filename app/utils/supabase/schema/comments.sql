@@ -31,7 +31,9 @@ create table comment_moderation (
 );
 
 -- Performance indexes
-create index idx_comments_item_id on public.folklore_comments(item_id);
+CREATE INDEX IF NOT EXISTS idx_folklore_comments_item_id ON public.folklore_comments (item_id);
+-- get comments by item_id using the index
+
 create index idx_comments_parent_id on public.folklore_comments(parent_id);
 create index idx_comments_created_at on public.folklore_comments(created_at);
 create index idx_comments_user_id on public.folklore_comments(user_id);
@@ -59,6 +61,9 @@ create index idx_comments_created_at
 -- Votes
 create index idx_votes_comment_id
   on public.comment_votes(comment_id);
+
+CREATE INDEX IF NOT EXISTS idx_folklore_comment_votes_comment_id ON public.folklore_comment_votes (comment_id);
+
 
 create index idx_votes_user_id
   on public.comment_votes(user_id);
@@ -236,4 +241,87 @@ where c.id = 'd3b68d52-aeb3-480c-803a-7e336310b0e7'
   and c.is_deleted = false
     and c.is_moderated = false
 group by c.id;
+
+-- Fetch votes for all comments
+select
+  cv.comment_id,
+  cv.user_id,
+  cv.vote
+from public.folklore_comment_votes cv
+where cv.comment_id in (
+  'd3b68d52-aeb3-480c-803a-7e336310b0e7',
+  'reply-comment-uuid-here'
+);
+
+-- Fetch all votes
+SELECT
+  c.id AS comment_id,
+  c.content,
+  COALESCE(SUM(v.vote), 0) AS total_votes,
+  COUNT(v.*) AS vote_count
+FROM
+  folklore_comments c
+LEFT JOIN folklore_comment_votes v ON c.id = v.comment_id
+GROUP BY
+  c.id, c.content
+ORDER BY
+  total_votes DESC;
+
+-- Fetch all votes for replies
+SELECT
+  c.id AS reply_id,
+  c.parent_id,
+  c.content,
+  COALESCE(SUM(v.vote), 0) AS total_votes
+FROM
+  folklore_comments c
+LEFT JOIN folklore_comment_votes v ON c.id = v.comment_id
+WHERE
+  c.parent_id IS NOT NULL
+GROUP BY
+  c.id, c.parent_id, c.content
+ORDER BY
+  c.created_at ASC;
+
+
+-- Test index
+SELECT * FROM public.get_comments_with_votes('7e4c378a-2744-46ee-aff6-628b8579a4dd')
+WHERE parent_id IS NULL;
+
+-- create a function to get comments with votes
+CREATE OR REPLACE FUNCTION public.get_comments_with_votes(item_id UUID)
+RETURNS TABLE (
+  id UUID,
+  item_id UUID,
+  parent_id UUID,
+  user_id UUID,
+  content TEXT,
+  is_deleted BOOLEAN,
+  is_moderated BOOLEAN,
+  created_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ,
+  vote_score INT
+) AS $$
+  SELECT
+    c.id,
+    c.item_id,
+    c.parent_id,
+    c.user_id,
+    c.content,
+    c.is_deleted,
+    c.is_moderated,
+    c.created_at,
+    c.updated_at,
+    COALESCE(SUM(cv.vote), 0) AS vote_score
+  FROM public.folklore_comments c
+  LEFT JOIN public.folklore_comment_votes cv ON c.id = cv.comment_id
+  WHERE c.item_id = item_id AND c.is_deleted = false AND c.is_moderated = false
+  GROUP BY c.id, c.item_id, c.parent_id, c.user_id, c.content, c.is_deleted, c.is_moderated, c.created_at, c.updated_at;
+  ORDER BY
+    c.created_at ASC;
+LANGUAGE plpgsql
+$$;
+
+
+
 -- End of test scripts --

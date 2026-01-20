@@ -243,7 +243,7 @@ export class RiddleMetricsService {
  */
 
 export class FolkloreCommentsService {
-  // getCommentsByItemId
+
   static async getCommentsByItemId(itemId: string): Promise<FolkloreComment[]> {
     try {
       const { data, error } = await supabase
@@ -251,11 +251,26 @@ export class FolkloreCommentsService {
         .select('*')
         .eq('item_id', itemId)
         .order('created_at', { ascending: true });
+
       if (error) throw error;
       return data || [];
     } catch (error) {
       console.error('Error fetching comments by item ID:', error);
       return [];
     }
+  }
+
+  static async getCommentWithVotesByItemId(itemId:string): Promise<FolkloreComment[]>{
+    try {
+      const { data, error } = await supabase
+        .rpc('get_comments_with_votes', { item_id: itemId });
+      if (error) throw error;
+      return data || [];
+    }
+    catch (error) {
+      console.error('Error fetching comments with votes by item ID:', error);
+      return [];
+    }
+
   }
 }

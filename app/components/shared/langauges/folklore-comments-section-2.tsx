@@ -139,7 +139,7 @@ function CommentItem({
             {level > 0 && (
                 <div
                     className={`absolute w-3 ${parentConnectorHovered ? "bg-black" : "bg-border"}`}
-                    style={{ left: "-12px", top: "20px", height: "1px" }}
+                    style={{ left: "-12px", top: "20px", height: "10px" }}
                 />
             )}
 
@@ -225,7 +225,7 @@ function CommentItem({
                                     <UpvoteIcon />
                                 </Button>
                                 <span className="text-xs font-medium text-muted-foreground min-w-[1rem] text-center">
-                                    {comment.votes}
+                                    {comment.vote_score}
                                 </span>
                                 <Button
                                     variant="ghost"
@@ -243,10 +243,10 @@ function CommentItem({
                                     onClick={() => setIsReplying(!isReplying)}
                                 >
                                     <MessageCircle className="w-4 h-4 mr-1" />
-                                    Reply
+                                    {/* Reply */}
                                 </Button>
 
-
+{/*
                                 <Button
                                     variant="ghost"
                                     size="sm"
@@ -254,7 +254,7 @@ function CommentItem({
                                     onClick={() => setIsEditing(!isEditing)}
                                 >
                                     <Edit className="w-4 h-4" />
-                                </Button>
+                                </Button> */}
                                 {/* <Button
                                     variant="ghost"
                                     size="sm"
@@ -307,9 +307,7 @@ function CommentItem({
 
 export default function FolkloreCommentsSection() {
       const params = useParams();
-      //const isAdmin = useAdmin()
 
-      // const siteId = params.siteId as unknown as number;
       const id = params.riddleId as string;
 
 
@@ -321,11 +319,11 @@ export default function FolkloreCommentsSection() {
             setIsLoading(true);
             try {
               const res = await FolkloreCommentsService.getCommentsByItemId(id);
-            //   filter out parent comments only
-              const parentComments = res.filter(comment => !comment.parent_id);
-            // set replies for each parent comment
+
+              const parentComments = res.filter(comment => !comment.parent_id && !comment.is_deleted);
+
               parentComments.forEach(parentComment => {
-                  parentComment.replies = res.filter(comment => comment.parent_id === parentComment.id);
+                  parentComment.replies = res.filter(comment => comment.parent_id === parentComment.id && !comment.is_deleted);
               });
 
               setFolkloreComments(parentComments);
@@ -340,17 +338,6 @@ export default function FolkloreCommentsSection() {
         useEffect(() => {
             fetchFolkloreComments();
         }, [folkloreComments]);
-
-
-    // load comments from API - placeholder data for now
-    useEffect(() => {
-        // Simulate API call
-        const fetchComments = async () => {
-            // await api.getComments()
-            //   .then(setComments)
-        }
-        fetchComments()
-    }, [])
 
 
     const USER_AVATAR = "https://plus.unsplash.com/premium_photo-1671656349322-41de944d259b?w=40&h=40&fit=crop&crop=face"
@@ -379,7 +366,7 @@ export default function FolkloreCommentsSection() {
             author_id: "current-user-id",
             replies: [],
             created_at: new Date(),
-            votes: Math.floor(Math.random() * 50),
+            vote_score: Math.floor(Math.random() * 50),
             avatar: USER_AVATAR,
             parent_id: null,
             item_id: id,
@@ -428,7 +415,7 @@ export default function FolkloreCommentsSection() {
                     author_name: "You",
                     replies: [],
                     created_at: new Date(),
-                    votes: Math.floor(Math.random() * 50),
+                    vote_score: Math.floor(Math.random() * 50),
                     avatar: USER_AVATAR,
                     updated_at: null,
                 }

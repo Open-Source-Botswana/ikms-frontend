@@ -23,7 +23,7 @@ export interface FolkloreComment {
   created_at: Date | null
   updated_at: Date | null
   replies?: FolkloreComment[]
-  votes: number
+  vote_score: number
   avatar?: string
 }
 
@@ -42,7 +42,7 @@ export interface FolkloreCommentDTO {
   author: string
   avatar_url?: string
   created_at: string
-  votes: number
+  vote_score: number
   is_deleted: boolean
 }
 
@@ -101,7 +101,7 @@ export interface CommentWithModeration {
   replies?: CommentWithModeration[];
   parent_id: string | null;
   item_id: string;
-  votes: number;
+  vote_score: number;
   avatar?: string;
 }
 
