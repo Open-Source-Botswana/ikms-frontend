@@ -20,7 +20,7 @@ import { SiteTypeSelector } from './siteTypeSelector'
 import { useSiteCreationStore } from '@/lib/store/siteStore'
 import { siteService } from '@/lib/services/api/sitesService'
 import { useCreateSite, useSites } from '@/app/hooks/use-sites'
-import { SensitivityLevel } from '@/lib/types/sitesData'
+import { SensitivityLevel, SiteCategory } from '@/lib/types/sitesData'
 import { ExtendedFile } from '@/lib/types'
 import { isDragActive } from 'framer-motion'
 import { useDropzone } from 'react-dropzone'
@@ -134,7 +134,7 @@ export default function SiteCreationFlow({
         return (
           <SiteTypeSelector
             selectedType={siteData.category || 'heritage'}
-            onSelect={(type) => updateSiteData({ category: type })}
+            onSelect={(type) => updateSiteData({ category: type as SiteCategory })}
           />
         )
 
