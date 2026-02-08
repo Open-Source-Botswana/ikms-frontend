@@ -17,7 +17,6 @@ import {
 import { Button } from '@/app/components/ui/button';
 import RiddlesOverviewGridMetrics from '@/app/components/languages/folklore/feedback/riddleMetrics';
 
-// Updated interface to match the new table structure
 interface RiddleItem {
   id: string;
   category: string;
@@ -33,7 +32,7 @@ interface RiddleItem {
   is_deleted?:string;
 }
 
-// Error boundary component for better error handling
+
 const ErrorBoundary = ({
   error,
   onReset,
@@ -62,7 +61,7 @@ const ErrorBoundary = ({
   </div>
 );
 
-// Loading skeleton component
+
 const LoadingSkeleton = () => (
   <div className="max-w-2xl mx-auto p-6">
     <div className="space-y-4">
@@ -76,7 +75,7 @@ const LoadingSkeleton = () => (
   </div>
 );
 
-// Empty state component
+
 const EmptyState = ({ onRefresh }: { onRefresh: () => void }) => (
   <div className="max-w-2xl mx-auto p-6 text-center">
     <div className="flex flex-col items-center justify-center py-12">
@@ -98,7 +97,6 @@ const EmptyState = ({ onRefresh }: { onRefresh: () => void }) => (
   </div>
 );
 
-// Add Riddle Form Component
 const AddRiddleForm = ({ onRiddleAdded }: { onRiddleAdded: () => void }) => {
   const [formData, setFormData] = useState({
     category: 'logic',

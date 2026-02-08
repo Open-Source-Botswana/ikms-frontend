@@ -12,7 +12,7 @@ import { SiteCategory } from '@/lib/types/sitesData'
 
 interface SiteTypeSelectorProps {
   selectedType: SiteCategory | null
-  onSelect: (type: SiteCategory) => void
+  onSelect: (type: SiteCategory | string) => void
 }
 
 export function SiteTypeSelector({

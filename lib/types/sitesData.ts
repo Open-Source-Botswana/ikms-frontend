@@ -12,7 +12,7 @@ export type SiteCategory =
   | 'migration'
 
 export type SiteViewMode = "Heritage" | "Tribal"
-// TODO: add type for public view
+
 export interface SiteData {
   id: number,
   site_name: string,
@@ -82,4 +82,33 @@ export type SiteVoteType = {
   siteId?:number,
   vote: SiteVote,
   comment?: string
+}
+
+export interface CulturalSite {
+  id: string
+  name: string
+  latitude: number
+  longitude: number
+  description: string
+  category: 'heritage' | 'language' | 'botanical' | 'tribal' | 'migration'
+  language?: string
+  tribe?: string
+  images: string[]
+  videos: string[]
+  audio: string[]
+  metadata: {
+    unesco: boolean
+    undp: boolean
+    unicef: boolean
+    localContext: string
+    indigenousSystem: string
+    rights: string
+    ipMetadata: string
+    sensitivityLevel: 'public' | 'restricted' | 'closed'
+    accessProtocol: string
+  }
+  populationDensity?: number
+  migrationRoute?: string
+  dateCreated: string
+  lastUpdated: string
 }

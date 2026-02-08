@@ -2,10 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in {
@@ -102,9 +110,15 @@
     --color-tk-cultural: #92400e;
     --color-tk-women: #be185d;
     --color-tk-men: #1e40af;
+
+
+        /* Custom tokens */
+    --hero-overlay: linear-gradient(135deg, hsla(0, 0%, 0%, 0.7) 0%, hsla(0, 0%, 0%, 0.3) 100%);
+    --card-overlay: linear-gradient(180deg, transparent 40%, hsla(0, 0%, 0%, 0.85) 100%);
+    --text-shadow: 0 2px 4px hsla(0, 0%, 0%, 0.5);
   }
 
-    .dark {
+  .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
@@ -244,6 +258,8 @@
   h2 {
     font-size: var(--text-xl);
   }
+
+
 }
 
 .faq-button {
@@ -354,7 +370,7 @@
 }
 
 @layer base {
-  * {
+  /* * {
     @apply border-border;
   }
 
@@ -372,8 +388,20 @@
   h5,
   h6 {
     @apply tracking-tight;
+  } */
+
+    * {
+    @apply border-border;
   }
 
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
   h1 {
     @apply text-4xl font-bold md:text-5xl lg:text-6xl;
   }
@@ -395,72 +423,124 @@
   }
 
   /* Leaflet Styles */
-.leaflet-container {
-  height: 100%;
-  width: 100%;
-  font-family: system-ui, -apple-system, sans-serif;
-}
-.leaflet-popup-content-wrapper {
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  border: none;
-}
-
-.leaflet-popup-content {
-  margin: 16px 20px;
-  line-height: 1.5;
-}
-
-.leaflet-popup-tip {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
+  .leaflet-container {
+    height: 100%;
+    width: 100%;
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
   }
-  to {
-    opacity: 1;
+  .leaflet-popup-content-wrapper {
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border: none;
   }
-}
 
-@keyframes growUp {
-  from {
-    height: 0;
+  .leaflet-popup-content {
+    margin: 16px 20px;
+    line-height: 1.5;
   }
-  to {
-    height: var(--height);
+
+  .leaflet-popup-tip {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
-  50% {
-    transform: translateY(-10px);
+
+  @keyframes growUp {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--height);
+    }
   }
-}
 
-.animate-fadeIn {
-  animation: fadeIn 0.5s ease-out forwards;
-}
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
 
-.animate-growUp {
-  animation: growUp 1s ease-out forwards;
-}
+  .animate-fadeIn {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
+  .animate-growUp {
+    animation: growUp 1s ease-out forwards;
+  }
 
-.backdrop-blur-sm {
-  backdrop-filter: blur(4px);
-}
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+  }
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
   }
+
+
+
+@layer components {
+  .hero-title {
+    @apply text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight;
+    text-shadow: var(--text-shadow);
+  }
+
+  .hero-subtitle {
+    @apply text-lg md:text-xl text-foreground/80;
+    text-shadow: var(--text-shadow);
+  }
+
+  .section-title {
+    @apply text-white text-2xl md:text-3xl font-semibold mb-2;
+    position: relative;
+    padding-left: 1.5rem;
+  }
+
+  .section-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: hsl(var(--primary));
+  }
+
+
+  .image-overlay {
+    background: var(--card-overlay);
+  }
+
+  .nav-link {
+    @apply relative text-sm font-medium text-foreground/80 hover:text-foreground transition-colors;
+  }
+
+  .nav-link::after {
+    content: '';
+    @apply absolute left-0 -bottom-1 w-0 h-0.5 bg-primary transition-all duration-300;
+  }
+
+  .nav-link:hover::after {
+    @apply w-full;
+  }
+
+}
 }

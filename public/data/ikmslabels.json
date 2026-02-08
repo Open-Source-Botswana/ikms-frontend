@@ -1,0 +1,32 @@
+{
+  "bc-consent-verified": {
+    "id": "bc-consent-verified",
+    "title": "BC Consent Verified (BC CV)",
+    "shortCode": "BC CV",
+    "category": "Protocol",
+    "label_domain": "biocultural",
+    "description": "Indigenous peoples have the right to permission the use of information, biological collections, data, and digital sequence information (DSI) that derives from associated lands, waters and territories. This Label verifies that there are consent conditions in place for uses of information, collections, data, and digital sequence information.",
+    "templateText": "This Label affirms that the representation and presentation of this material is in keeping with community expectations and cultural protocols. It lets you know that for the individual, family or community represented in this material, use is considered fair, reasonable and respectful.",
+    "label_image_url": "https://localcontexts.org/wp-content/uploads/2024/08/bc-consent-verified.png"
+  },
+  "tk-verified": {
+    "id": "tk-verified",
+    "title": "TK Verified (TK V)",
+    "shortCode": "TK V",
+    "category": "Protocol",
+    "label_domain": "traditional",
+    "description": "This Label should be used when you and your community are satisfied with the way in which your traditional knowledge materials are being represented online or offline. This Label affirms that appropriate conditions for access and use are in place and that whoever has made this material accessible has made accommodations for cultural protocols associated with the knowledge. It lets users know that the right thing is being done by your community protocols and standards.",
+    "templateText": "This Label affirms that the representation and presentation of this material is in keeping with community expectations and cultural protocols. It lets you know that for the individual, family or community represented in this material, use is considered fair, reasonable and respectful.",
+    "label_image_url": "https://localcontexts.org/wp-content/uploads/2024/08/tk-verified.png"
+  },
+  "tk-open-to-collaboration": {
+    "id": "tk-open-to-collaboration",
+    "title": "TK Open to Collaboration (TK CB)",
+    "shortCode": "TK CB",
+    "category": "Protocol",
+    "label_domain": "traditional",
+    "description": "This Label is being used to indicate that the community is open to research collaborations. With this Label, future opportunities for collaboration and engagement are supported.",
+    "templateText": "This Label is being used to make clear [community name or authorizing body] is open to future engagement, collaboration, and partnership around research opportunities.",
+    "label_image_url": "https://localcontexts.org/wp-content/uploads/2024/08/tk-open-to-collaboration.png"
+  }
+}
