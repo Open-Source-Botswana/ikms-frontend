@@ -1,15 +1,10 @@
 'use client';
-
-//import { useParams } from 'next/navigation';
-
-import { useEthnobotanyStore } from '@/lib/store/ethnobotanyStore';
-
 import { RecordDetailView } from '@/app/components/botanical/plant-detail-view';
-import { useAdmin } from '@/app/hooks/use-admin';
 import React, { use } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Target } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { usePlantStore } from '@/lib/store/plantStore';
 
 export default function PlantDetailPage({
   params,
@@ -25,7 +20,7 @@ export default function PlantDetailPage({
  const {id} = use(params);
 
   console.warn(`[Plant ID] checking plant Id : ${params}`);
-  const plant = useEthnobotanyStore(state => state.getPlantById(id));
+  const plant = usePlantStore(state => state.getPlantById(id));
 
   if (!plant) {
     return (
