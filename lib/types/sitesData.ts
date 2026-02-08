@@ -12,7 +12,7 @@ export type SiteCategory =
   | 'migration'
 
 export type SiteViewMode = "Heritage" | "Tribal"
-// TODO: add type for public view
+
 export interface SiteData {
   id: number,
   site_name: string,

@@ -564,7 +564,7 @@ export default function CommunityCreationFlow({
         <Button
           onClick={() => {
             if (step === 'REVIEW') {
-              //  submit the community data to backend api
+              // TODO: submit data to backend api
               const newCommunity = {
                 communityIdentifier: generateCommunityIdentifier(),
                 identity: {

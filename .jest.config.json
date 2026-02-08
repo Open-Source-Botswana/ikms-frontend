@@ -9,13 +9,16 @@
         "tsx",
         "js"
     ],
-    "transform": {},
+    "transform": {
+        "^.+\\.tsx?$": "ts-jest"
+    },
     "extensionsToTreatAsEsm": [
         ".ts",
         ".tsx"
     ],
     "moduleNameMapper": {
-        "^@/(.*)$": "<rootDir>/lib/$1"
+
+        "^@/(.*)$": "<rootDir>/$1"
     },
 
     "testPathIgnorePatterns": [

@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     "app/components/shared/map/map.js",
     "app/components/shared/map/index.js"
-  ],
+, "app/__tests__/sum.test.js"  ],
   "exclude": ["node_modules"]
 }

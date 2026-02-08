@@ -35,7 +35,7 @@ const AppLayout: React.FC<LayoutProps> = ({ children }) => {
 
         {/* Footer */}
         <footer className="bg-white dark:bg-gray-900 p-4 text-center text-sm text-gray-500 dark:text-gray-400">
-          © {new Date().getFullYear()} KitsoHub | Version 1.0.0
+          © {new Date().getFullYear()} IKMS Botswana | Version 1.0.0
         </footer>
       </div>
     </div>
