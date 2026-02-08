@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { EthnobotanicalMetadata, VerificationEvent } from '@/lib/types/ethnobotanical';
-import { mockPlants as initialMockPlants } from '@/app/utils/data/ethnobotany'
+import { mockPlants } from '@/app/utils/data/ethnobotany'
 
 export interface PlantFormDraft {
   // Basic Info
@@ -163,9 +163,9 @@ export const usePlantStore = create<PlantStore>()(
   persist(
     (set, get) => ({
 
-      // bypassing mockPlant initialization
-      plants: typeof window !== 'undefined' && localStorage.getItem('plant-store-a00001a') ? JSON.parse(localStorage.getItem('plant-store-a00001a') || '[]').plants : initialMockPlants,
 
+      //plants: [typeof window !== 'undefined' && localStorage.getItem('plant-store-a00001a') ? JSON.parse(localStorage.getItem('plant-store-a00001a') || '[]').plants : initialMockPlants],
+      plants: [],
       currentStep: 0,
       draft: createEmptyDraft(),
       isEditing: false,
@@ -173,8 +173,8 @@ export const usePlantStore = create<PlantStore>()(
 
       setPlants: (plants) => set({ plants }),
 
-      addPlant: (plant) => set((state) => ({
-        plants: [...state.plants, plant]
+      addPlant: plant => set((state) => ({
+        plants: [...state.plants, plant],
       })),
 
       updatePlant: (id, updates) => set((state) => ({
@@ -304,8 +304,9 @@ export const usePlantStore = create<PlantStore>()(
       }
     }),
     {
-      name: 'plant-store-a00001a',
-      partialize: (state) => ({ plants: state.plants })
+      name: 'plant-store-a00010a',
+      partialize: (state) => ({ plants: state.plants }),
+
     }
   )
 );

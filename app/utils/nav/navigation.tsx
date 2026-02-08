@@ -163,8 +163,8 @@ const Navigation = memo(() => {
                       description="Preservation, documentation & promotion"
                     />
                     <MenuItemCard
-                      href="#"
-                      title="Plants & Botany"
+                      href="/botanical"
+                      title="Plants"
                       description="Medicinal plants, herbs & traditional remedies"
                     />
                     <MenuItemCard

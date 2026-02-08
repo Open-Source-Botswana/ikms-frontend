@@ -255,13 +255,15 @@ export const relatedSpecies: SpeciesRelation[] = [
 
 export const getPlantById = (id: string):  Partial<EthnobotanicalMetadata> | undefined => {
 
+
+  // causing SSR + circular dependency issues, so we will just pull from the plant store directly for now
   const {plants} = usePlantStore.getState();
 
 
   const plant = plants.find(p => p.id === id);
-  if(!plant) {
-      return mockPlants.find(plant => plant.id === id);
-  }
+  // if(!plant) {
+  //     return mockPlants.find(plant => plant.id === id);
+  // }
 
   return plant as Partial<EthnobotanicalMetadata>;
 };

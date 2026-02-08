@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+"use client"
+import React, { use, useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {  mockPlants2 } from '@/app/utils/mock/botanical'
-import { MedicinalPlant } from '@/lib/types/botanical'
+
 
 import { ChevronUp } from 'lucide-react'
 
@@ -11,10 +11,17 @@ import {  categoryFilters } from "@/app/utils/data/researchAreas";
 import { ResearchGrid } from './sections/research-grid'
 import { EthnobotanicalMetadata } from '@/lib/types/ethnobotanical'
 import { mockPlants } from '@/app/utils/data/ethnobotany'
+import { usePlantStore } from '@/lib/store/plantStore'
 
 export default function BotanicalBrowse() {
   const [botanicalData, setBotanicalData] =
     useState<EthnobotanicalMetadata[]>(mockPlants)
+
+  const {plants, setPlants} = usePlantStore()
+
+   useEffect(() => {
+     setPlants(botanicalData)
+   }, [plants]);
 
   const [activeCategory, setActiveCategory] = useState("All");
 
