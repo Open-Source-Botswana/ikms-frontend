@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { EthnobotanicalMetadata, VerificationEvent } from '@/lib/types/ethnobotanical';
+import type { EthnobotanicalMetadata, PlantImages, VerificationEvent } from '@/lib/types/ethnobotanical';
 import { mockPlants } from '@/app/utils/data/ethnobotany'
 
 export interface PlantFormDraft {
@@ -70,6 +70,8 @@ export interface PlantFormDraft {
     unescoSite: boolean;
     undpSupported: boolean;
   };
+
+  galleryImages: PlantImages[];
 }
 
 const createEmptyDraft = (): PlantFormDraft => ({
@@ -122,7 +124,8 @@ const createEmptyDraft = (): PlantFormDraft => ({
   location: {
     unescoSite: false,
     undpSupported: false
-  }
+  },
+  galleryImages: []
 });
 
 interface PlantStore {
@@ -248,7 +251,8 @@ export const usePlantStore = create<PlantStore>()(
               location: {
                 unescoSite: plant.location?.unescoSite || false,
                 undpSupported: plant.location?.undpSupported || false
-              }
+              },
+              galleryImages: plant.galleryImages || []
             }
           });
         }

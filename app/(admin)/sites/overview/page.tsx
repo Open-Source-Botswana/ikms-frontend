@@ -1,28 +1,15 @@
 'use client'
 
-// Update the sites
-import CollectionDashboard from '@/app/components/community/collectionDashboard'
-import CommunityCreationFlow from '@/app/components/community/communityCreationFlow'
-import CommunityDashboard from '@/app/components/community/communityDashboard'
-import { CommunityDirectory } from '@/app/components/community/communityDirectory'
-import SubCommunityCreationFlow from '@/app/components/community/subCommunityCreationFlow'
-import SubCommunityDashboard from '@/app/components/community/subCommunityDashboard'
 import SiteCreationFlow from '@/app/components/heritageSites/siteCreationFlow'
 import { SitesDirectory } from '@/app/components/heritageSites/sitesDirectory'
 import { Alert, AlertDescription } from '@/app/components/ui/alert'
 import { Button } from '@/app/components/ui/button'
-import { useCommunityStore } from '@/lib/store/communityStore'
-import { SubCommunityData } from '@/lib/types/community'
-import { BookOpen, Info, Plus } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import { Info, Plus } from 'lucide-react'
+import React, { useState } from 'react'
 
 export default function CommunityPage() {
   const [currentView, setCurrentView] = useState('directory')
   const [showCreateSite, setShowCreateSite] = useState(false)
-
-//   const [currentSubCommunity, setCurrentSubCommunity] =
-//     useState<SubCommunityData | null>(null)
-
 
   const handleBackToMain = () => {
     setShowCreateSite(false)
@@ -42,36 +29,7 @@ export default function CommunityPage() {
     switch (currentView) {
       case 'directory':
         return <SitesDirectory onNavigate={setCurrentView} />
-    //   case 'community-dashboard':
-    //     return (
-    //       <CommunityDashboard
-    //         onNavigate={setCurrentView}
-    //         onCreateSubCommunity={() => setShowCreateSubCommunity(true)}
-    //       />
-    //     )
-    //   case 'sub-community-dashboard':
-    //     return (
-    //       <SubCommunityDashboard
-    //         onBack={handleBackToMain}
-    //         onNavigate={setCurrentView}
-    //       />
-    //     )
 
-    //   case 'collection-dashboard':
-    //     return (
-    //       <CollectionDashboard
-    //         onBack={handleBackToMain}
-    //         onNavigate={setCurrentView}
-    //       />
-    //     )
-      // case 'knowledge':
-      //   return <KnowledgeBaseView />;
-      // case 'contribute':
-      //   return <ContributionWizard />;
-      // case 'tk-labels':
-      //   return <TKLabelDashboard />;
-      // case 'management':
-      //   return <ManagementConsole />;
       default:
         return <SitesDirectory />
     }
@@ -96,14 +54,6 @@ export default function CommunityPage() {
             <span>Add New Site</span>
           </Button>
 
-          {/* <Button
-              variant="outline"
-              onClick={() => setCurrentView('contribute')}
-              className="flex items-center space-x-2"
-            >
-              <BookOpen className="w-4 h-4" />
-              <span>Contribute Knowledge</span>
-            </Button> */}
         </div>
       )}
 
