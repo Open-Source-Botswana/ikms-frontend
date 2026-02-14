@@ -3,7 +3,7 @@ import { useParams } from "next/navigation";
 
 import { Layout } from "@/app/components/botanical/layout/layout";
 import Link from "next/link";
-import { ArrowLeft, BookOpen, Code, Download, ExternalLink, FileText, FlaskConical, Globe, Heart, Leaf, MapPin, Microscope, Shield, Stethoscope, Users } from "lucide-react";
+import { ArrowLeft, BookOpen, Code, Download, ExternalLink, FileText, FlaskConical, Globe, Heart, ImageIcon, Leaf, MapPin, Microscope, Shield, Stethoscope, Users } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Hero } from "@/app/components/botanical/sections/hero";
 import { Breadcrumb } from "@/app/components/ui/custom-bread-crumb";
@@ -22,6 +22,7 @@ import { JSONExportViewer } from "@/app/components/botanical/detail/JSONLDExport
 import { VerificationPanel } from "@/app/components/botanical/verificationPanel";
 import { BreadcrumbItem, VerificationRole } from "@/lib/types/botanical";
 import { EthnobotanicalMetadata } from "@/lib/types/ethnobotanical";
+import ImageGallery from "@/app/components/botanical/detail/image-gallery";
 
 
 
@@ -89,7 +90,7 @@ const ResearchDetail = () => {
      <Hero
         title={plant.localNames && plant.localNames[0] || plant.name}
         subtitle={plant.description}
-        backgroundImage={plant.image}
+        backgroundImage={plant.image && plant.image || plant.galleryImages && (plant.galleryImages.find((img) => img.isBanner)?.url || plant.galleryImages[0].url)}
         height="large"
         breadcrumb={<Breadcrumb items={breadcrumbItems} />}
       />
@@ -277,6 +278,19 @@ const ResearchDetail = () => {
                   />
                 </ExpandableSection>
               </motion.div>
+
+              {plant.galleryImages && plant.galleryImages.length > 0 && (
+                <motion.div variants={itemVariants}>
+                  <ExpandableSection title="Image Gallery" icon={ImageIcon} defaultOpen>
+                    <ImageGallery images={plant.galleryImages} />
+                  </ExpandableSection>
+
+                  </motion.div>
+
+
+              )
+
+              }
 
               {/* Location Map */}
               {plant.locationMetadata && plant.locationMetadata.length > 0 && (

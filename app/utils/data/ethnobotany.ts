@@ -205,6 +205,31 @@ export const mockPlants: EthnobotanicalMetadata[] = [
       }
     ],
 
+   galleryImages: [
+      {
+        id: 'img-001',
+        url: '/assets/botanical/Dicoma_anomala_500X500.jpg',
+        captions: 'Dicoma anomala in its natural Kalahari habitat',
+        credit: 'BTHA Field Research Team',
+        isBanner: true,
+        date_added: '2024-01-15T10:00:00Z'
+      },
+      {
+        id: 'img-002',
+        url: '/assets/botanical/Artemisia-afra.jpg',
+        captions: 'Woody rootstock used in traditional medicine preparations',
+        credit: 'Dr. Mma Kgosi',
+        date_added: '2024-01-15T10:30:00Z'
+      },
+      {
+        id: 'img-003',
+        url: '/assets/botanical/Marula.jpg',
+        captions: 'Mauve-white florets characteristic of the species',
+        credit: 'Kgalagadi Botanical Survey',
+        date_added: '2024-01-16T08:00:00Z'
+      },
+    ],
+
     jsonLdExport: {
       "@context": {
         dwc: "http://rs.tdwg.org/dwc/terms/",

@@ -3,7 +3,7 @@ import { useParams } from "next/navigation";
 
 import { Layout } from "@/app/components/botanical/layout/layout";
 import Link from "next/link";
-import { ArrowLeft, BookOpen, Code, Download, ExternalLink, FileText, FlaskConical, Globe, Heart, Leaf, MapPin, Microscope, Shield, Stethoscope, Users } from "lucide-react";
+import { ArrowLeft, BookOpen, Code, Download, ExternalLink, FileText, FlaskConical, Globe, Heart, ImageIcon, Leaf, MapPin, Microscope, Shield, Stethoscope, Users } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Hero } from "@/app/components/botanical/sections/hero";
 import { Breadcrumb } from "@/app/components/ui/custom-bread-crumb";
@@ -20,6 +20,7 @@ import { ComplianceBadges } from "@/app/components/botanical/detail/compliance";
 import { LocationMap } from "@/app/components/botanical/detail/location-map";
 import { JSONExportViewer } from "@/app/components/botanical/detail/JSONLDExport-viewer";
 import { BreadcrumbItem } from "@/lib/types/botanical";
+import ImageGallery from "@/app/components/botanical/detail/image-gallery";
 
 
 
@@ -78,92 +79,7 @@ const ResearchDetail = () => {
         height="large"
         breadcrumb={<Breadcrumb items={breadcrumbItems} />}
       />
-      {/*
-            <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-3 gap-12">
 
-            <div className="lg:col-span-2 space-y-8">
-              <div>
-                <h2 className="section-title mb-6">Overview</h2>
-                <p className="text-foreground/80 leading-relaxed text-lg">
-
-                  {research.description}
-                </p>
-              </div>
-
-              <div>
-                <h2 className="section-title mb-6">Key Findings</h2>
-                <ul className="space-y-4">
-                  {research.modernMedicine.approvedUses.map((finding, index) => (
-                    <li
-                      key={index}
-                      className="flex items-start gap-4 p-4 bg-card rounded-lg border border-border"
-                    >
-                      <span className="flex-shrink-0 w-8 h-8 bg-primary/10 text-primary rounded-full flex items-center justify-center font-semibold text-sm">
-                        {index + 1}
-                      </span>
-                      <span className="text-foreground/80">{finding}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-
-              <div className="bg-card p-6 rounded-lg border border-border">
-                <h3 className="font-display text-xl font-semibold mb-4">Access Resources</h3>
-                <p className="text-muted-foreground mb-4">
-                  Explore datasets, publications, and tools related to this research area.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <Button>
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    View Publications
-                  </Button>
-                  <Button variant="outline">
-                    Download Dataset
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-
-            <aside className="space-y-6">
-              <div className="bg-card p-6 rounded-lg border border-border sticky top-24">
-                <h3 className="font-semibold mb-4">Related Topics</h3>
-                <div className="flex flex-wrap gap-2">
-                  {research.traditionalUses.map((topic) => (
-                    <span
-                      key={topic}
-                      className="px-3 py-1.5 bg-secondary text-secondary-foreground rounded-full text-sm"
-                    >
-                      {topic}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="mt-8 pt-6 border-t border-border">
-                  <h3 className="font-semibold mb-4">Need Help?</h3>
-                  <p className="text-muted-foreground text-sm mb-4">
-                    Contact our research team for more information about this area.
-                  </p>
-                  <Button variant="outline" className="w-full">
-                    Contact Team
-                  </Button>
-                </div>
-              </div>
-            </aside>
-          </div>
-
-
-          <div className="mt-12 pt-8 border-t border-border">
-            <Link href="/" className="inline-flex items-center gap-2 text-primary hover:underline">
-              <ArrowLeft className="w-4 h-4" />
-              Back to all research
-            </Link>
-          </div>
-        </div>
-      </section> */}
 
       <section className="py-12">
         <div className="container mx-auto px-4">
@@ -348,6 +264,20 @@ const ResearchDetail = () => {
                 </ExpandableSection>
               </motion.div>
 
+
+              {plant.galleryImages && plant.galleryImages.length > 0 && (
+                <motion.div variants={itemVariants}>
+                  <ExpandableSection title="Image Gallery" icon={ImageIcon} defaultOpen>
+                    <ImageGallery images={plant.galleryImages} />
+                  </ExpandableSection>
+
+                  </motion.div>
+
+
+              )
+
+              }
+
               {/* Location Map */}
               {plant.locationMetadata && plant.locationMetadata.length > 0 && (
                 <motion.div variants={itemVariants}>
@@ -381,7 +311,7 @@ const ResearchDetail = () => {
               </motion.div>
 
               {/* AI Chatbot */}
-              <motion.div variants={itemVariants}>
+              {/* <motion.div variants={itemVariants}>
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <span className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                     💬
@@ -389,7 +319,7 @@ const ResearchDetail = () => {
                   Chat with Plant Data
                 </h3>
                 <AIChatbot plantData={plant} />
-              </motion.div>
+              </motion.div> */}
             </div>
 
             {/* Sidebar */}

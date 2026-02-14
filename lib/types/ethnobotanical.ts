@@ -1,3 +1,4 @@
+import { PlantFormDraft } from './../store/plantStore';
 import { VerificationRole } from "./botanical";
 
 export type LabelDomain = 'traditional' | 'biocultural' | 'research';
@@ -117,6 +118,26 @@ export interface JSONLdExport {
   };
 }
 
+export interface PlantImages {
+  id: string;
+  captions? : string;
+  credit? : string;
+  url?: string;
+  isBanner?: boolean;
+  date_added: string;
+}
+
+type DocumentType = 'research_paper' | 'consent_form' | 'benefit_agreement' | 'field_notes' | 'other';
+
+export interface PlantDocuments {
+  title?: string;
+  description?: string;
+  url?: string;
+  doc_type?: DocumentType;
+  date_added: string;
+  doc_size?: string;
+}
+
 export interface EthnobotanicalMetadata {
   id: string;
   name: string;
@@ -171,6 +192,8 @@ export interface EthnobotanicalMetadata {
   jsonLdExport?: JSONLdExport;
   location?: Location;
   locationMetadata?: GeographicalFeature[];
+  galleryImages?: PlantImages[];
+  documents?: PlantDocuments[];
 }
 
 export interface ChemicalCompound {

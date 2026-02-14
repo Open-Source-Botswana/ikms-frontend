@@ -14,6 +14,7 @@ import { CulturalAuthorityStep } from "./steps/cultural-authority";
 import { ComplianceStep } from "./steps/compliance";
 import { ResearchStep } from "./steps/research";
 import { ReviewStep } from "./steps/review-step";
+import { ImagesStep } from "./steps/images-step";
 
 
 
@@ -23,6 +24,8 @@ const FORM_STEPS = [
   { title: 'Cultural', description: 'Cultural authority and labels' },
   { title: 'Compliance', description: 'Consent and IP metadata' },
   { title: 'Research', description: 'Studies and references' },
+  { title: 'Images', description: 'Upload and manage plant images' },
+  // { title: 'Documents', description: 'Upload research papers, consent forms, etc.' },
   { title: 'Review', description: 'Review and submit' }
 ];
 
@@ -77,6 +80,8 @@ export default function PlanForm(
       case 4:
         return true;
       case 5:
+        return true;
+      case 6:
         return !!(
           draft.name &&
           draft.scientificName &&
@@ -102,7 +107,11 @@ export default function PlanForm(
         return <ComplianceStep draft={draft} onUpdate={updateDraft} />;
       case 4:
         return <ResearchStep draft={draft} onUpdate={updateDraft} />;
+        // Images step with main image upload and gallery - upload multiple images, set main image, add captions/credits
       case 5:
+        return <ImagesStep draft={draft} onUpdate={updateDraft} />;
+        // Documents / files upload step for research papers, consent forms, etc.
+      case 6:
         return <ReviewStep draft={draft} />;
       default:
         return null;
