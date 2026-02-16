@@ -1,75 +1,105 @@
+import { motion } from "framer-motion";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select";
 import { PlantFormDraft } from "@/lib/store/plantStore";
 import { DocumentCategory, PlantDocuments } from "@/lib/types/ethnobotanical";
-import { set } from "date-fns";
-import { motion } from "framer-motion";
-import { FileSpreadsheet, FileText, FolderOpen, Plus, Trash2 } from "lucide-react";
-import { Doc } from "prettier";
+import { AlertCircle, FileSpreadsheet, FileText, FolderOpen, LucideFile, Plus, Trash2, Upload } from "lucide-react";
 import { useState } from "react";
+import { ExtendedFile } from '@/lib/types';
+import { useDropzone } from 'react-dropzone';
+import { isDragActive } from 'framer-motion'
+import { cn } from "@/lib/utils";
+import { Badge } from "@/app/components/ui/badge";
+import { Progress } from "@/app/components/ui/progress";
 
 
 interface DocumentsStepProps {
-    draft: PlantFormDraft;
-    onUpdate: (updatedDraft: Partial<PlantFormDraft>) => void;
+  draft: PlantFormDraft;
+  onUpdate: (updatedDraft: Partial<PlantFormDraft>) => void;
 }
 
 const DOC_TYPE_ICONS: Record<string, typeof FileText> = {
-    pdf: FileText,
-    docx: FileText,
-    xlsx: FileSpreadsheet
+  pdf: FileText,
+  docx: FileText,
+  xlsx: FileSpreadsheet
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
-    research_paper: "Research Paper",
-    consent_form: "Consent Form",
-    benefit_agreement: "Benefit Agreement",
-    field_notes: "Field Notes",
-    other: "Other"
+  research_paper: "Research Paper",
+  consent_form: "Consent Form",
+  benefit_agreement: "Benefit Agreement",
+  field_notes: "Field Notes",
+  other: "Other"
 }
 
-export const DocumentsStep = ({draft,onUpdate}: DocumentsStepProps)=>{
+export const DocumentsStep = ({ draft, onUpdate }: DocumentsStepProps) => {
 
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
-    const [url, setUrl] = useState("");
-    const [docType, setDocType] = useState<PlantDocuments["doc_type"]>("pdf");
-    const [category, setCategory] = useState<DocumentCategory>("research_paper");
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [url, setUrl] = useState("");
+  const [docType, setDocType] = useState<PlantDocuments["doc_type"]>("pdf");
+  const [category, setCategory] = useState<DocumentCategory>("research_paper");
+  const [newUrl, setNewUrl] = useState('');
 
+  // Files
+  const [files, setFiles] = useState<ExtendedFile[]>([]);
+  const maxFiles = 5
+  const maxSize = 10 * 1024 * 1024; // 10MB
 
-    const DocIcon = (docType: string) => DOC_TYPE_ICONS[docType] || FileText;
-    const addDocument = () => {
-        if (!name.trim() || !url.trim()) return;
-        const newDoc: PlantDocuments = {
-            id: `doc-${Date.now()}-${crypto.randomUUID()}`,
-            title: name,
-            description,
-            url,
-            doc_type: docType,
-            date_added: new Date().toISOString(),
-            category
-        }
-        onUpdate({documents: [...draft.documents, newDoc]});
-        setName("");
-        setUrl("");
-        setDescription("");
+  const { getRootProps, getInputProps, isDragReject } = useDropzone({
+    accept: {
+      'application/pdf': ['.pdf'],
+      'application/msword': ['.doc'],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+
+    },
+    onDrop: (acceptedFiles) => {
+      setFiles(acceptedFiles)
+      setNewUrl(acceptedFiles[0] ? URL.createObjectURL(acceptedFiles[0]) : "");
+      addDocument();
     }
-    const removeDocument = (id: string) => {
-        onUpdate({documents: draft.documents.filter(d =>d.id !== id)});
+  })
+
+  const getFileIcon = (file: File) => {
+    // eslint-disable-next-line jsx-a11y/alt-text
+    if (file.type === 'application/pdf') return <FileText className="h-6 w-6" />
+    return <LucideFile className="h-6 w-6" />
+  }
+
+
+  const DocIcon = (docType: string) => DOC_TYPE_ICONS[docType] || FileText;
+  const addDocument = () => {
+    if (!name.trim() || !url.trim()) return;
+    const newDoc: PlantDocuments = {
+      id: `doc-${Date.now()}-${crypto.randomUUID()}`,
+      title: name,
+      description,
+      url,
+      doc_type: docType,
+      date_added: new Date().toISOString(),
+      category
     }
+    onUpdate({ documents: [...draft.documents, newDoc] });
+    setName("");
+    setUrl("");
+    setDescription("");
+  }
+  const removeDocument = (id: string) => {
+    onUpdate({ documents: draft.documents.filter(d => d.id !== id) });
+  }
 
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-6">
 
-    return(
-        <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.3 }}
-        className="space-y-6">
-
-                 <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-3 mb-4">
         <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
           <FileText className="w-5 h-5 text-primary" />
         </div>
@@ -79,7 +109,7 @@ export const DocumentsStep = ({draft,onUpdate}: DocumentsStepProps)=>{
         </div>
       </div>
 
-            {/* Add Document Form */}
+      {/* Add Document Form */}
       <div className="p-4 border border-dashed border-border rounded-xl space-y-3 bg-muted/30">
         <h3 className="text-sm font-medium flex items-center gap-2">
           <Plus className="w-4 h-4" />
@@ -102,7 +132,6 @@ export const DocumentsStep = ({draft,onUpdate}: DocumentsStepProps)=>{
                 <SelectItem value="pdf">PDF</SelectItem>
                 <SelectItem value="docx">Word Document</SelectItem>
                 <SelectItem value="xlsx">Spreadsheet</SelectItem>
-                <SelectItem value="image">Image</SelectItem>
                 <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
@@ -130,6 +159,132 @@ export const DocumentsStep = ({draft,onUpdate}: DocumentsStepProps)=>{
           Add Document
         </Button>
       </div>
+
+
+      <div className="p-4 border border-dashed border-border rounded-xl space-y-3 bg-muted/30">
+        <div
+          {...getRootProps()}
+          className={cn(
+            'border-2 border-dashed rounded-lg p-8 transition-colors duration-300 ease-in-out',
+            isDragActive() &&
+            !isDragReject &&
+            'border-primary bg-primary/5',
+            isDragReject && 'border-destructive bg-destructive/5',
+            !isDragActive &&
+            !isDragReject &&
+            'border-border hover:border-primary/50 hover:bg-accent/30',
+            'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+          )}
+        >
+          <input {...getInputProps()} />
+
+          <div className="flex flex-col items-center justify-center text-center">
+            <Upload
+              className={cn(
+                'h-12 w-12 mb-4 transition-colors',
+                isDragActive() &&
+                !isDragReject &&
+                'text-primary animate-pulse',
+                isDragReject && 'text-destructive',
+                !isDragActive() &&
+                !isDragReject &&
+                'text-muted-foreground'
+              )}
+            />
+
+            {isDragReject ? (
+              <div className="flex items-center text-destructive">
+                <AlertCircle className="h-5 w-5 mr-2" />
+                <p className="font-medium">
+                  Some files are not allowed
+                </p>
+              </div>
+            ) : (
+              <>
+                <p className="text-lg font-medium mb-1">
+                  {isDragActive()
+                    ? 'Drop the files here'
+                    : 'Drag & drop files here'}
+                </p>
+                <p className="text-sm text-muted-foreground mb-4">
+                  or click to browse your fimles
+                </p>
+              </>
+            )}
+            <div className="flex flex-wrap gap-2 justify-center">
+              <Badge variant="outline">PDF</Badge>
+              <Badge variant="outline">DOCX</Badge>
+              <Badge variant="outline">Excel</Badge>
+              <Badge variant="outline">Other</Badge>
+            </div>
+
+            <p className="text-xs text-muted-foreground mt-4">
+              Max {maxFiles} files, up to{' '}
+              {Math.round(maxSize / (1024 * 1024))}MB each
+            </p>
+          </div>
+
+
+        </div>
+        {/* files */}
+
+        {files.length > 0 && (
+
+          <div className='mt-6 space-y-4'>
+            <h4 className="font-medium">
+              {/* Files ({files.length}/{maxFiles}) */}
+              Allowed Files {draft.galleryImages.length}/{maxFiles}
+            </h4>
+
+            <div className='space-y-3'>
+              {files.map((file, index) => (
+                <div
+                  key={index}
+                  className='flex items-center bg-card rounded-lg p-3 shadow-sm'
+                >
+
+                  <div className="mr-3 text-primary">
+                    {getFileIcon(file)}
+                  </div>
+                  <div className='flex-1 min-w-0'>
+
+                    <div className="flex justify-between mb-1">
+                      <p className="font-medium text-sm">
+                        {file.name}
+                      </p>
+                      <p className="ml-2 text-xs text-muted-foreground ">
+                        {(file.size / 1024).toFixed(1)}KB
+                      </p>
+                    </div>
+                    <Progress
+                      value={file.progress}
+                      className="h-1"
+                    />
+
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="ml-2 text-muted-foreground hover:text-destructive"
+                    onClick={() => {
+                      setFiles(files.filter((f) => f !== file))
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    <span className="sr-only">Remove file</span>
+                  </Button>
+
+                </div>
+              ))}
+
+            </div>
+
+          </div>
+        )
+        }
+
+      </div>
+
       {/* Documents List */}
       {draft.documents.length > 0 ? (
         <div className="space-y-3">
@@ -177,8 +332,8 @@ export const DocumentsStep = ({draft,onUpdate}: DocumentsStepProps)=>{
         </div>
       )}
 
-        </motion.div>
-    )
+    </motion.div>
+  )
 }
 
 // export default DocumentsStep;

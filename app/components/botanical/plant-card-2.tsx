@@ -45,7 +45,7 @@ export default function PlantCardMain({
         >
           <div className="relative overflow-hidden">
             <ImageWithFallback
-              src={plant.image && plant.image || plant.galleryImages && (plant.galleryImages.find((img) => img.isBanner)?.url || plant.galleryImages[0].url)}
+              src={plant.image && plant.image || plant.galleryImages && (plant.galleryImages.find((img) => img.isBanner)?.url || plant.galleryImages[0]?.url) || '/placeholder-plant.jpg'}
               alt={plant.name}
               className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
             />

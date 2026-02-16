@@ -72,26 +72,13 @@ const ResearchDetail = () => {
   ] as BreadcrumbItem[];
 
   return (
-    // <Layout>
 
-    //   <Hero
-    //     title={plant.localNames && plant.localNames[0] || plant.name}
-    //     subtitle={plant.description}
-    //     backgroundImage={plant.image}
-    //     height="large"
-    //     breadcrumb={<Breadcrumb items={breadcrumbItems} />}
-    //   />
-
-
-
-
-    // </Layout>
 
     <>
       <Hero
         title={plant.localNames && plant.localNames[0] || plant.name}
         subtitle={plant.description}
-        backgroundImage={plant.image && plant.image || plant.galleryImages && (plant.galleryImages.find((img) => img.isBanner)?.url || plant.galleryImages[0].url)}
+        backgroundImage={plant.image && plant.image || plant.galleryImages && (plant.galleryImages.find((img) => img.isBanner)?.url || plant.galleryImages[0]?.url) || '/placeholder-plant.jpg'}
         height="large"
         breadcrumb={<Breadcrumb items={breadcrumbItems} />}
       />
