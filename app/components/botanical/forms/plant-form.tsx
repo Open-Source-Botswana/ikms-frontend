@@ -15,6 +15,7 @@ import { ComplianceStep } from "./steps/compliance";
 import { ResearchStep } from "./steps/research";
 import { ReviewStep } from "./steps/review-step";
 import { ImagesStep } from "./steps/images-step";
+import { DocumentsStep } from "./steps/documents-step";
 
 
 
@@ -25,7 +26,7 @@ const FORM_STEPS = [
   { title: 'Compliance', description: 'Consent and IP metadata' },
   { title: 'Research', description: 'Studies and references' },
   { title: 'Images', description: 'Upload and manage plant images' },
-  // { title: 'Documents', description: 'Upload research papers, consent forms, etc.' },
+  { title: 'Documents', description: 'Upload research papers, consent forms, etc.' },
   { title: 'Review', description: 'Review and submit' }
 ];
 
@@ -107,11 +108,11 @@ export default function PlanForm(
         return <ComplianceStep draft={draft} onUpdate={updateDraft} />;
       case 4:
         return <ResearchStep draft={draft} onUpdate={updateDraft} />;
-        // Images step with main image upload and gallery - upload multiple images, set main image, add captions/credits
       case 5:
         return <ImagesStep draft={draft} onUpdate={updateDraft} />;
-        // Documents / files upload step for research papers, consent forms, etc.
       case 6:
+        return <DocumentsStep draft={draft} onUpdate={updateDraft} />;
+      case 7:
         return <ReviewStep draft={draft} />;
       default:
         return null;
