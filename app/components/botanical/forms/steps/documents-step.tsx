@@ -38,7 +38,6 @@ export const DocumentsStep = ({ draft, onUpdate }: DocumentsStepProps) => {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [url, setUrl] = useState("");
   const [docType, setDocType] = useState<PlantDocuments["doc_type"]>("pdf");
   const [category, setCategory] = useState<DocumentCategory>("research_paper");
   const [newUrl, setNewUrl] = useState('');
@@ -72,19 +71,19 @@ export const DocumentsStep = ({ draft, onUpdate }: DocumentsStepProps) => {
 
   const DocIcon = (docType: string) => DOC_TYPE_ICONS[docType] || FileText;
   const addDocument = () => {
-    if (!name.trim() || !url.trim()) return;
+    if (!name.trim() || !newUrl.trim()) return;
     const newDoc: PlantDocuments = {
       id: `doc-${Date.now()}-${crypto.randomUUID()}`,
       title: name,
       description,
-      url,
+      url: newUrl.trim(),
       doc_type: docType,
       date_added: new Date().toISOString(),
       category
     }
     onUpdate({ documents: [...draft.documents, newDoc] });
     setName("");
-    setUrl("");
+    setNewUrl("");
     setDescription("");
   }
   const removeDocument = (id: string) => {
@@ -122,7 +121,7 @@ export const DocumentsStep = ({ draft, onUpdate }: DocumentsStepProps) => {
           </div>
           <div>
             <Label htmlFor="doc-url">URL / File Path *</Label>
-            <Input id="doc-url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://example.com/doc.pdf" />
+            <Input id="doc-url" value={newUrl} onChange={(e) => setNewUrl(e.target.value)} placeholder="https://example.com/doc.pdf" />
           </div>
           <div>
             <Label>File Type</Label>
@@ -154,7 +153,7 @@ export const DocumentsStep = ({ draft, onUpdate }: DocumentsStepProps) => {
             <Input id="doc-desc" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Brief description of the document" />
           </div>
         </div>
-        <Button onClick={addDocument} disabled={!name.trim() || !url.trim()} size="sm">
+        <Button onClick={addDocument} disabled={!name.trim() || !newUrl.trim()} size="sm">
           <Plus className="w-4 h-4 mr-1" />
           Add Document
         </Button>
