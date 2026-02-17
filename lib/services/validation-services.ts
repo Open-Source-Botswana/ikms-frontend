@@ -1,0 +1,10 @@
+import { CONFIG } from "@/app/api/config";
+
+
+export class ValidationService {
+    static validateEnvironment(): void {
+        if (!CONFIG.PAPERLESS_SEARCH_URL || CONFIG.PAPERLESS_API_TOKEN) {
+            throw new Error("⚠ Missing required environment variables for Paperless API.");
+        }
+    }
+}
