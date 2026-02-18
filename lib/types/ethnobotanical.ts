@@ -138,6 +138,9 @@ export interface PlantDocuments {
   category?: DocumentCategory;
   date_added: string;
   doc_size?: string;
+  file?: File;  // to extend to multiple files
+  uploadStatus?: 'pending' | 'uploading' | 'success' | 'error';
+  paperlessId?: number;
 }
 
 export interface EthnobotanicalMetadata {

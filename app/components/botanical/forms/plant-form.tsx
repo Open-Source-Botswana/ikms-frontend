@@ -8,7 +8,6 @@ import { FormProgress } from "./form-progress";
 import { FormNavigation } from "./form-navigation";
 import { Button } from "../../ui/button";
 import { LucideArrowLeft } from "lucide-react";
-import { on } from "events";
 import { MedicinalInfoStep } from "./steps/medicinal-info";
 import { CulturalAuthorityStep } from "./steps/cultural-authority";
 import { ComplianceStep } from "./steps/compliance";
@@ -16,6 +15,9 @@ import { ResearchStep } from "./steps/research";
 import { ReviewStep } from "./steps/review-step";
 import { ImagesStep } from "./steps/images-step";
 import { DocumentsStep } from "./steps/documents-step";
+import { ExtendedFile } from "@/lib/types";
+import { createNewBotanicalSubmit } from "@/lib/api";
+import { NextResponse } from "next/server";
 
 
 
@@ -37,10 +39,9 @@ interface PlantFormProps {
 
 
 export default function PlanForm(
-    {onClose, onSuccess}: PlantFormProps
+  { onClose, onSuccess }: PlantFormProps
 ) {
 
-      const navigate = useRouter();
   const {
     currentStep,
     draft,
@@ -53,13 +54,44 @@ export default function PlanForm(
     resetDraft
   } = usePlantStore();
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
 
-    submitDraft();
-    toast.success(
-      isEditing ? 'Plant record updated successfully!' : 'Plant submitted for verification!',
-      { description: 'You can track its progress in the dashboard.' }
-    );
+    try {
+      const formData = new FormData()
+
+
+      const file = draft.documents[0]?.file;
+      if (file && file instanceof File) {
+        formData.append('document', file, file.name);
+      } else {
+        throw new Error('No valid document file found');
+      }
+      formData.append('title', file.name);
+      formData.append('tags', '1'); // TODO: update for multiple tags
+      formData.append('created', new Date().toISOString());
+      formData.append('from_webui', 'true');
+
+      formData.append('custom_fields', '0');
+      formData.append('storage_path', '');
+      formData.append('correspondent', '');
+      formData.append('document_type', '');
+
+      await createNewBotanicalSubmit(formData)
+
+    } catch (error) {
+      console.error(` ❌ Preview error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      return NextResponse.json(
+        { error: ` ❌ Request error: ${error instanceof Error ? error.message : 'Unknown error'}` },
+        { status: 500 }
+      );
+    } finally {
+      submitDraft();
+      toast.success(
+        isEditing ? 'Plant record updated successfully!' : 'Plant submitted for verification!',
+        { description: 'You can track its progress in the dashboard.' }
+      );
+    }
+
     onSuccess();
     resetDraft();
   };
@@ -68,7 +100,7 @@ export default function PlanForm(
     toast.info('Draft saved', { description: 'Your progress has been saved locally.' });
   };
 
-    const isStepValid = () => {
+  const isStepValid = () => {
     switch (currentStep) {
       case 0:
         return !!(draft.name && draft.scientificName && draft.family && draft.description);
@@ -96,7 +128,7 @@ export default function PlanForm(
     }
   };
 
-    const renderStep = () => {
+  const renderStep = () => {
     switch (currentStep) {
       case 0:
         return <BasicInfoStep draft={draft} onUpdate={updateDraft} />;
@@ -121,15 +153,15 @@ export default function PlanForm(
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-    <Button
-        onClick={() => onClose()}
-        variant={'ghost'}
-        size="icon"
-        className="mb-9"
-      >
-        <LucideArrowLeft size={20} />
-       Close
-      </Button>
+        <Button
+          onClick={() => onClose()}
+          variant={'ghost'}
+          size="icon"
+          className="mb-9"
+        >
+          <LucideArrowLeft size={20} />
+          Close
+        </Button>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

@@ -79,8 +79,10 @@ export const DocumentsStep = ({ draft, onUpdate }: DocumentsStepProps) => {
       url: newUrl.trim(),
       doc_type: docType,
       date_added: new Date().toISOString(),
-      category
+      category,
+      file: files[0]
     }
+
     onUpdate({ documents: [...draft.documents, newDoc] });
     setName("");
     setNewUrl("");

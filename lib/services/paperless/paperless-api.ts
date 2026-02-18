@@ -34,6 +34,9 @@ catch (error) {
 
 }
 
+
+
 export const paperlessAPIService = {
     getDocuments:() => fetchApi('/api/documents/', AUTH),
+
 }

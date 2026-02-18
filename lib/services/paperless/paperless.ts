@@ -1,5 +1,6 @@
 import { ApiResponse, PaperlessDocument } from "@/lib/types/paperless";
 import { paperlessAPIService } from "./paperless-api";
+import { API_ENDPOINTS } from "@/lib/constants/apiEndpoints";
 
 
 export class PaperlessService {
@@ -17,19 +18,33 @@ export class PaperlessService {
 
     }
 
-    private async makeRequest(url: string): Promise<Response> {
+    private async makeRequest(url: string, options: RequestInit = {}): Promise<Response> {
+
+        console.log("➡️ Initializing request:")
+        console.log(`➡️ Request URL: ${url}`)
+
         const response = await fetch(url, {
             headers: {
                 Authorization: `Token ${this.apiToken}`,
-                Accept: "application/json",
+                Accept: 'application/json; version=6',
             },
+            ...options
         });
 
         if (!response.ok) {
+            console.log("➡️ Found error from request:")
             throw new Error(`API request failed: ${response.status} ${response.statusText}`);
         }
 
         return response;
+    }
+
+    async addDocument(doc: FormData) {
+
+        return this.makeRequest(`${API_ENDPOINTS.paperless.uploadDocument}`, {
+            method: 'POST',
+            body: doc,
+        });
     }
     async getDocuments(): Promise<PaperlessDocument[] | null> {
         try {
