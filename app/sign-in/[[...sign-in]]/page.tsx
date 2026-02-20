@@ -7,7 +7,10 @@
 
 import React, { useState } from 'react'
 import svgPaths from '@/app/utils/svg/svg-tts5hwykkz';
-
+import { useSignIn, useSignUp } from '@clerk/nextjs'
+import { useRouter } from 'next/navigation'
+import { EmailCodeFactor } from '@clerk/types';
+import { useUser, useReverification } from '@clerk/nextjs'
 
 function BxBxlFacebook() {
   return (
@@ -102,16 +105,249 @@ function IKMSLogo() {
 }
 export default function ClerkCustomSignIn() {
 
-
-    const [isSignUp, setIsSignUp] = useState(false);
+  // const { isLoaded, signIn, setActive } = useSignIn()
+  const { signIn, setActive } = useSignIn()
+  const { signUp } = useSignUp()
+  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
-    const handleSubmit =  (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Form submitted:', { email, password, rememberMe, isSignUp });
+  const [showEmailCode, setShowEmailCode] = useState(false)
+  const [code, setCode] = React.useState('')
+  const router = useRouter()
 
-  };
+  const [verifying, setVerifying] = useState(false)
+  const { isLoaded, isSignedIn, user } = useUser()
+  const [error, setError] = useState('')
+
+  const createEmailAddress = useReverification((email: string) =>
+    user?.createEmailAddress({ email }),
+  )
+
+  const handleEmailCode = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!isLoaded) return
+
+
+    if (signUp) {
+      try {
+        const signUpAttempt = await signUp.attemptEmailAddressVerification({
+          code,
+        })
+
+        if (signUpAttempt.status === 'complete') {
+          if (setActive) {
+            await setActive({
+              session: signUpAttempt.createdSessionId,
+              navigate: async ({ session }) => {
+                if (session?.currentTask) {
+
+                  console.log(session?.currentTask)
+                  return
+                }
+
+                router.push('/ethnobotany/flora')
+              },
+            })
+          }
+        } else {
+
+          console.error('Sign-up attempt not complete:', signUpAttempt)
+          console.error('Sign-up attempt status:', signUpAttempt.status)
+        }
+      } catch (err: any) {
+
+        console.error(JSON.stringify(err, null, 2))
+      }
+    }
+
+    // Flow for signing in an existing user
+    try {
+      const signInAttempt = await signIn?.attemptFirstFactor({
+        strategy: 'email_code',
+        code,
+      })
+      if (signInAttempt && signInAttempt.status === 'complete') {
+        if (setActive) {
+          await setActive({
+            session: signInAttempt.createdSessionId,
+          })
+        }
+
+        router.push('/ethonobotany/flora')
+      } else if (signInAttempt) {
+
+        console.error('Sign-up attempt not complete:', signInAttempt)
+        console.error('Sign-up attempt status:', signInAttempt.status)
+      }
+    } catch (err: any) {
+      console.error(JSON.stringify(err, null, 2))
+    }
+  }
+
+
+  if (!isLoaded) {
+    // Handle loading state
+    return null
+  }
+
+  // if (!isSignedIn) {
+
+  //   return <p>You must be signed in to access this page</p>
+  // }
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+
+  //   console.log('➡️ Form submitted:', { email, password, rememberMe, isSignUp });
+
+  //   if (!isLoaded) return
+
+  //   try {
+  //     const signInAttempt = await signIn.create({
+  //       identifier: email,
+  //       password,
+  //     })
+
+  //     if (signInAttempt.status === 'complete') {
+  //       await setActive({
+  //         session: signInAttempt.createdSessionId,
+
+  //       })
+  //       router.push('/ethnobotany/flora')
+  //     }
+  //     else if (signInAttempt.status === 'needs_second_factor') {
+
+  //       const emailCodeFactor = signInAttempt.supportedSecondFactors?.find(
+  //         (factor): factor is EmailCodeFactor => factor.strategy === 'email_code',
+  //       )
+
+  //       if (emailCodeFactor) {
+  //         await signIn.prepareSecondFactor({
+  //           strategy: 'email_code',
+  //           emailAddressId: emailCodeFactor.emailAddressId,
+  //         })
+
+
+  //         setShowEmailCode(true)
+  //       }
+  //     } else {
+
+
+  //       console.error(JSON.stringify(signInAttempt, null, 2))
+  //     }
+
+
+  //   }
+  //   catch (err: any) {
+  //     console.error(`❌ ${JSON.stringify(err, null, 2)}`)
+
+  //     if (err.errors[0].code === 'form_idenfier_not_found') {
+
+  //       try {
+  //         await signUp?.prepareEmailAddressVerification({
+  //           strategy: 'email_code',
+  //         })
+  //       }
+  //       catch (err: any) {
+  //         console.error(`❌ ${JSON.stringify(err, null, 2)}`)
+  //       }
+  //     }
+
+  //   }
+
+  // };
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      if (!signIn) {
+        setError('Sign in not available')
+        return
+      }
+      const signInAttempt = await signIn.create({
+        identifier: email,
+      })
+
+      if (signInAttempt.status === 'complete') {
+        if (setActive) {
+          await setActive({
+            session: signInAttempt.createdSessionId,
+
+          })
+        }
+        router.push('/ethnobotany/flora')
+      }
+      else if (signInAttempt.status === 'needs_first_factor') {
+
+        const emailCodeFactor = signInAttempt.supportedFirstFactors?.find(
+          (factor): factor is EmailCodeFactor => factor.strategy === 'email_code',
+        )
+
+        if (emailCodeFactor) {
+          await signIn.prepareFirstFactor({
+            strategy: 'email_code',
+            emailAddressId: emailCodeFactor.emailAddressId,
+          })
+
+
+          setShowEmailCode(true)
+        }
+      } else {
+
+
+        console.error(JSON.stringify(signInAttempt, null, 2))
+      }
+
+
+    }
+    catch (err: any) {
+      console.error(`❌ ${JSON.stringify(err, null, 2)}`)
+    }
+
+  }
+
+  async function reset(e: React.FormEvent) {
+    e.preventDefault()
+    setVerifying(false)
+  }
+
+
+  if (verifying) {
+    return (
+      <div>
+        <p>Check your email and visit the link that was sent to you.</p>
+        <form onSubmit={reset}>
+          <button type="submit">Restart</button>
+        </form>
+      </div>
+    )
+  }
+
+  if (showEmailCode) {
+    return (
+      <>
+        <h1>Verify your email</h1>
+        <p>A verification code has been sent to your email.</p>
+        <form onSubmit={handleEmailCode}>
+          <div>
+            <label htmlFor="code">Enter verification code</label>
+            <input
+              onChange={(e) => setCode(e.target.value)}
+              id="code"
+              name="code"
+              type="text"
+              inputMode="numeric"
+              value={code}
+            />
+          </div>
+          <button type="submit">Verify</button>
+        </form>
+      </>
+    )
+  }
 
   return (
     <div className="bg-[#1a1a1a] min-h-screen w-full flex items-center justify-center">
@@ -174,7 +410,7 @@ export default function ClerkCustomSignIn() {
             <div className="mb-[14px]">
               <div className="relative h-[42px] w-full bg-white border border-[#c7ccd0] border-solid rounded-[8px]">
                 <input
-                id="email"
+                  id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -186,7 +422,7 @@ export default function ClerkCustomSignIn() {
               </div>
             </div>
 
-            <div className="mb-[16px]">
+            {/* <div className="mb-[16px]">
               <div className="relative h-[42px] w-full bg-white border border-[#c7ccd0] border-solid rounded-[8px]">
                 <input
                   type="password"
@@ -198,7 +434,7 @@ export default function ClerkCustomSignIn() {
                   required
                 />
               </div>
-            </div>
+            </div> */}
 
             {!isSignUp && (
               <div className="flex items-center gap-[6px] mb-[62px]">
@@ -225,7 +461,7 @@ export default function ClerkCustomSignIn() {
               className="h-[40px] w-full bg-[#678415] rounded-[8px] hover:bg-[#567013] transition-colors mb-[31px]"
             >
               <p className="font-['Roboto:Bold',sans-serif] font-bold text-[12px] text-center text-white uppercase" style={{ fontVariationSettings: "'wdth' 100" }}>
-                {isSignUp ? 'SIGN UP' : 'SIGN IN'}
+                {isSignUp ? 'SIGN UP' : 'CONTINUE'}
               </p>
             </button>
 
