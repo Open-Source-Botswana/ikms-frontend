@@ -198,3 +198,12 @@ export const accessLevelDescriptions = {
     'This sacred knowledge requires elder approval before access is granted.',
   GENDER_RESTRICTED: 'This knowledge is restricted to genders only.',
 }
+
+export type KnowledgeDomain =
+  | 'biodiversity' | 'history' | 'artifacts' | 'music'
+  | 'medicine' | 'agriculture' | 'language' | 'ceremony'
+  | 'crafts' | 'oral_tradition' | 'dance' | 'food';
+
+export type AccessLevel = 'public' | 'community_only' | 'restricted' | 'sacred';
+export type MediaType = 'audio' | 'video' | 'text' | 'image' | '3d_artifact' | 'document';
+export type MemberRole = 'elder' | 'chief' | 'healer' | 'researcher' | 'custodian' | 'contributor' | 'member';
