@@ -42,3 +42,20 @@ export const createNewSubmit = async (data?: BodyInit) => {
     throw new Error('Something went wrong on API server!')
   }
 }
+
+export const createNewBotanicalSubmit = async (data?: BodyInit) => {
+  const createURL = (path: string) => window.location.origin + path
+  const res = await fetch(
+    new Request(createURL('/api/botanical/paperless'), {
+      method: 'POST',
+      body: data,
+    })
+  )
+
+  if (res.ok) {
+    const data = await res.json()
+    return data.data
+  } else {
+    throw new Error('Something went wrong on API server!')
+  }
+}

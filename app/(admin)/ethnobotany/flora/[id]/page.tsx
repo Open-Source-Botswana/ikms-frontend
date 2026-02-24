@@ -3,7 +3,7 @@ import { useParams } from "next/navigation";
 
 import { Layout } from "@/app/components/botanical/layout/layout";
 import Link from "next/link";
-import { ArrowLeft, BookOpen, Code, Download, ExternalLink, FileText, FlaskConical, Globe, Heart, ImageIcon, Leaf, MapPin, Microscope, Shield, Stethoscope, Users } from "lucide-react";
+import { ArrowLeft, BookOpen, Code, Download, ExternalLink, FileText, FlaskConical, FolderOpen, Globe, Heart, ImageIcon, Leaf, MapPin, Microscope, Shield, Stethoscope, Users } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Hero } from "@/app/components/botanical/sections/hero";
 import { Breadcrumb } from "@/app/components/ui/custom-bread-crumb";
@@ -23,6 +23,7 @@ import { VerificationPanel } from "@/app/components/botanical/verificationPanel"
 import { BreadcrumbItem, VerificationRole } from "@/lib/types/botanical";
 import { EthnobotanicalMetadata } from "@/lib/types/ethnobotanical";
 import ImageGallery from "@/app/components/botanical/detail/image-gallery";
+import { DocumentViewer } from "@/app/components/botanical/detail/document-viewer";
 
 
 
@@ -49,18 +50,18 @@ const ResearchDetail = () => {
   if (!plant) {
     return (
 
-        <div className="container mx-auto px-4 py-32 text-center">
-          <h1 className="text-3xl font-display font-semibold mb-4">Research Not Found {id}</h1>
-          <p className="text-muted-foreground mb-8">
-            The research area you're looking for doesn't exist.
-          </p>
-          <Link href="/ethnobotany/flora" className="inline-flex items-center gap-2">
-            <Button>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Home
-            </Button>
-          </Link>
-        </div>)
+      <div className="container mx-auto px-4 py-32 text-center">
+        <h1 className="text-3xl font-display font-semibold mb-4">Research Not Found {id}</h1>
+        <p className="text-muted-foreground mb-8">
+          The research area you're looking for doesn't exist.
+        </p>
+        <Link href="/ethnobotany/flora" className="inline-flex items-center gap-2">
+          <Button>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Home
+          </Button>
+        </Link>
+      </div>)
 
   }
 
@@ -71,32 +72,19 @@ const ResearchDetail = () => {
   ] as BreadcrumbItem[];
 
   return (
-    // <Layout>
-
-    //   <Hero
-    //     title={plant.localNames && plant.localNames[0] || plant.name}
-    //     subtitle={plant.description}
-    //     backgroundImage={plant.image}
-    //     height="large"
-    //     breadcrumb={<Breadcrumb items={breadcrumbItems} />}
-    //   />
 
 
-
-
-    // </Layout>
-
-<>
-     <Hero
+    <>
+      <Hero
         title={plant.localNames && plant.localNames[0] || plant.name}
         subtitle={plant.description}
-        backgroundImage={plant.image && plant.image || plant.galleryImages && (plant.galleryImages.find((img) => img.isBanner)?.url || plant.galleryImages[0].url)}
+        backgroundImage={plant.image && plant.image || plant.galleryImages && (plant.galleryImages.find((img) => img.isBanner)?.url || plant.galleryImages[0]?.url) || '/placeholder-plant.jpg'}
         height="large"
         breadcrumb={<Breadcrumb items={breadcrumbItems} />}
       />
 
 
-          <section className="py-12">
+      <section className="py-12">
         <div className="container mx-auto px-4">
           <motion.div
             variants={containerVariants}
@@ -285,12 +273,21 @@ const ResearchDetail = () => {
                     <ImageGallery images={plant.galleryImages} />
                   </ExpandableSection>
 
-                  </motion.div>
+                </motion.div>
 
 
               )
 
               }
+
+              {/* Documents */}
+              {plant.documents && plant.documents.length > 0 && (
+                <motion.div variants={itemVariants}>
+                  <ExpandableSection title="Documents & Files" icon={FolderOpen}>
+                    <DocumentViewer documents={plant.documents} />
+                  </ExpandableSection>
+                </motion.div>
+              )}
 
               {/* Location Map */}
               {plant.locationMetadata && plant.locationMetadata.length > 0 && (
@@ -326,15 +323,15 @@ const ResearchDetail = () => {
 
 
 
-   <motion.div variants={itemVariants}>
+              <motion.div variants={itemVariants}>
                 <ExpandableSection title="Verification Panel" icon={Shield} defaultOpen>
-                <VerificationPanel
+                  <VerificationPanel
                     record={plant as Partial<EthnobotanicalMetadata>}
                     currentUserRole={"admin" as VerificationRole}
                     currentUser={{
                       id: 'current-user-id', // Replace with actual user ID from auth
                       name: 'Current User'   // Replace with actual user name
-                    }}/>
+                    }} />
 
                 </ExpandableSection>
               </motion.div>
@@ -378,8 +375,8 @@ const ResearchDetail = () => {
                   <h3 className="font-semibold mb-4">Compliance & Labels</h3>
                   <ComplianceBadges
                     compliance={plant.standardsCompliance}
-                    consentStatus={plant.consentStatus?? 'pending'}
-                    sensitivityLevel={plant.sensitivityLevel?? 'restricted'}
+                    consentStatus={plant.consentStatus ?? 'pending'}
+                    sensitivityLevel={plant.sensitivityLevel ?? 'restricted'}
                   />
 
                   <div className="mt-4 pt-4 border-t border-border">
@@ -438,7 +435,7 @@ const ResearchDetail = () => {
                 <div className="text-xs text-muted-foreground space-y-1 px-2">
                   <p>DOI: {plant.docId}</p>
                   <p>Created: {plant.dateCreated && new Date(plant.dateCreated).toLocaleDateString()}</p>
-                  <p>Updated: {plant.lastUpdated &&new Date(plant.lastUpdated).toLocaleDateString()}</p>
+                  <p>Updated: {plant.lastUpdated && new Date(plant.lastUpdated).toLocaleDateString()}</p>
                   <p className="pt-2 border-t border-border mt-2">
                     {plant.copyrightNotice}
                   </p>
@@ -450,7 +447,7 @@ const ResearchDetail = () => {
 
         </div>
       </section>
-      </>
+    </>
   )
 
 }

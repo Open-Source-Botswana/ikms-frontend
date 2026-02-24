@@ -2,10 +2,14 @@
 // Core Types for Indigenous Knowledge Portal
 
 import {
+  AccessLevel,
   CollectionType,
   CommunityGovernance,
   CulturalProtocol,
+  KnowledgeDomain,
   LicensingOption,
+  MediaType,
+  MemberRole,
   TKLabel,
 } from '../constants/community'
 
@@ -214,4 +218,128 @@ export interface AppState {
   setCurrentCommunity: (community: Community | null) => void
   setUser: (user: Person | null) => void
   toggleDarkMode: () => void
+}
+
+export interface ComplianceMetadata {
+  // UN & International Frameworks
+  unDeclarationOnIndigenousRights: boolean;    // UNDRIP
+  undpIndigenousPeoplePolicy: boolean;          // UNDP
+  wipoTraditionalKnowledge: boolean;            // WIPO IGC
+  nagoyaProtocol: boolean;                       // CBD / Nagoya
+  kunmingMontrealGBF: boolean;                   // GBF Target 21
+  swakopmundProtocol: boolean;                    // ARIPO
+  humanRightsCompliant: boolean;
+
+  // Documentation Standards
+  localContextsLabels: boolean;                  // Local Contexts Hub
+  darwinCore: boolean;                           // Biodiversity data
+  berneConvention: boolean;                      // Copyright
+  doi: string;                                   // Digital Object Identifier
+  docId: string;                                 // Internal Document ID
+
+  // Consent & IP
+  fpicObtained: boolean;                         // Free Prior Informed Consent
+  benefitSharingAgreement: string;
+  ipProtection: string;
+  consentExpiry: string;
+}
+
+export interface CommunityMember {
+  id: string;
+  name: string;
+  role: MemberRole;
+  title?: string;
+  bio?: string;
+  avatar?: string;
+  languages: string[];
+  specialization?: string;
+  isPublic: boolean;
+}
+
+export interface CulturalEvent {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  location: string;
+  type: 'festival' | 'ceremony' | 'workshop' | 'exhibition' | 'gathering' | 'research';
+  accessLevel: AccessLevel;
+  image?: string;
+}
+
+export interface KnowledgeRecord {
+  id: string;
+  title: string;
+  description: string;
+  domain: KnowledgeDomain;
+  mediaType: MediaType;
+  mediaUrl?: string;
+  thumbnailUrl?: string;
+  accessLevel: AccessLevel;
+  language: string;
+  narrator?: string;
+  dateRecorded?: string;
+  dateAdded: string;
+  tags: string[];
+  communityId: string;
+  compliance: ComplianceMetadata;
+  // 3D artifact specific
+  modelUrl?: string;
+  modelFormat?: '3d_glb' | '3d_gltf' | '3d_obj';
+}
+
+export interface MigrationRoute {
+  id: string;
+  name: string;
+  description: string;
+  period: string;
+  coordinates: [number, number][];  // lat, lng pairs for polyline
+  color: string;
+}
+
+export interface CommunityLocation {
+  id: string;
+  name: string;
+  description: string;
+  coordinates: [number, number];  // [lat, lng]
+  type: 'current_habitation' | 'historical' | 'sacred_site' | 'research_station';
+  population?: string;
+}
+export interface CommunityCluster {
+  id: string;
+  name: string;
+  subGroups?: string[];
+  description: string;
+  heroImage: string;
+  bannerImage?: string;
+  region: string;
+  country: string;
+  languages: string[];
+  population?: string;
+
+  // Cultural identity
+  culturalPractices: string[];
+  knowledgeDomains: KnowledgeDomain[];
+
+  // Geographic data
+  locations: CommunityLocation[];
+  migrationRoutes: MigrationRoute[];
+
+  // Content
+  knowledgeRecords: KnowledgeRecord[];
+  members: CommunityMember[];
+  events: CulturalEvent[];
+
+  // Compliance & Governance
+  compliance: ComplianceMetadata;
+  governanceStructure: string;
+  tkLabels: string[];
+  bcLabels: string[];
+
+  // Stats
+  totalRecords: number;
+  publicRecords: number;
+
+  dateEstablished?: string;
+  lastUpdated: string;
 }

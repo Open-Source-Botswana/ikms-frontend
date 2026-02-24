@@ -7,58 +7,58 @@ import { Button } from '../../ui/button';
 
 
 interface ImageGalleryProps {
-    images: PlantImages[];
+  images: PlantImages[];
 }
 export default function ImageGallery({ images }: ImageGalleryProps) {
-    const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
 
-    const openLightbox = (index: number) => setSelectedIndex(index);
-    const closeLightbox = () => setSelectedIndex(null);
+  const openLightbox = (index: number) => setSelectedIndex(index);
+  const closeLightbox = () => setSelectedIndex(null);
 
-const prev = () => setSelectedIndex(i => i !== null ? (i - 1 + images.length) % images.length : null);
+  const prev = () => setSelectedIndex(i => i !== null ? (i - 1 + images.length) % images.length : null);
   const next = () => setSelectedIndex(i => i !== null ? (i + 1) % images.length : null);
 
   const selected = selectedIndex !== null ? images[selectedIndex] : null;
 
-    return (
-        <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {images.map((img, index) => (
-                    <div key={index} className="aspect-square overflow-hidden rounded-lg border">
-                        <motion.div
-                            key={img.id}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: index * 0.05 }}
-                            className="relative group cursor-pointer rounded-lg overflow-hidden border border-border"
-                            onClick={() => openLightbox(index)}
-                        >
-                            <div className="aspect-square overflow-hidden">
-                                <img
-                                    src={img.url}
-                                    alt={img.captions || 'Plant image'}
-                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                    loading="lazy"
-                                />
-                            </div>
-                            <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
-                                <div>
-                                    {img.captions && <p className="text-xs font-medium text-foreground line-clamp-2">{img.captions}</p>}
-                                    {img.credit && <p className="text-xs text-muted-foreground">📷 {img.credit}</p>}
-                                </div>
-                            </div>
-                            {img.isBanner && (
-                                <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 bg-primary text-primary-foreground text-[10px] rounded-full flex items-center gap-0.5">
-                                    <Camera className="w-2.5 h-2.5" /> Main
-                                </span>
-                            )}
-                        </motion.div>
-                    </div>
+  return (
+    <>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {images.map((img, index) => (
+          <div key={index} className="aspect-square overflow-hidden rounded-lg border">
+            <motion.div
+              key={img.id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: index * 0.05 }}
+              className="relative group cursor-pointer rounded-lg overflow-hidden border border-border"
+              onClick={() => openLightbox(index)}
+            >
+              <div className="aspect-square overflow-hidden">
+                <img
+                  src={img.url}
+                  alt={img.captions || 'Plant image'}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  loading="lazy"
+                />
+              </div>
+              <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                <div>
+                  {img.captions && <p className="text-xs font-medium text-foreground line-clamp-2">{img.captions}</p>}
+                  {img.credit && <p className="text-xs text-muted-foreground">📷 {img.credit}</p>}
+                </div>
+              </div>
+              {img.isBanner && (
+                <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 bg-primary text-primary-foreground text-[10px] rounded-full flex items-center gap-0.5">
+                  <Camera className="w-2.5 h-2.5" /> Main
+                </span>
+              )}
+            </motion.div>
+          </div>
 
-                ))}
-            </div>
+        ))}
+      </div>
 
-                  <AnimatePresence>
+      <AnimatePresence>
         {selected && selectedIndex !== null && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -116,8 +116,8 @@ const prev = () => setSelectedIndex(i => i !== null ? (i - 1 + images.length) % 
           </motion.div>
         )}
       </AnimatePresence>
-        </>
+    </>
 
 
-    )
+  )
 }

@@ -37,10 +37,6 @@ import React, { useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Swal from 'sweetalert2'
 
-// import { NextResponse } from 'next/server'
-// import prisma from '@/lib/prisma'
-// import withReactContent from "sweetalert2-react-content";
-
 export default function ContributionPage() {
   //  const {toast} = useToast();
   const [isUploading, setIsUploading] = useState(false)

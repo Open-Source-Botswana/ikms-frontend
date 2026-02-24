@@ -127,15 +127,20 @@ export interface PlantImages {
   date_added: string;
 }
 
-type DocumentType = 'research_paper' | 'consent_form' | 'benefit_agreement' | 'field_notes' | 'other';
-
+export type DocumentCategory = 'research_paper' | 'consent_form' | 'benefit_agreement' | 'field_notes' | 'other';
+export type DocumentType = 'pdf' | 'docx' | 'xlsx' | 'txt' | 'other';
 export interface PlantDocuments {
+  id?: string;
   title?: string;
   description?: string;
   url?: string;
   doc_type?: DocumentType;
+  category?: DocumentCategory;
   date_added: string;
   doc_size?: string;
+  file?: File;  // to extend to multiple files
+  uploadStatus?: 'pending' | 'uploading' | 'success' | 'error';
+  paperlessId?: number;
 }
 
 export interface EthnobotanicalMetadata {

@@ -207,7 +207,7 @@ const Navigation = memo(() => {
 
                         <NavigationMenuLink asChild>
                           <a
-                            href="/sub-communities"
+                            href="/communities/map"
                             className="flex items-start space-x-4 p-4 rounded-lg hover:bg-sky-50 transition-colors group border border-gray-200 hover:border-sky-300"
                           >
                             <div className="w-12 h-12 bg-sky-100 rounded-lg flex items-center justify-center group-hover:bg-sky-200">
@@ -215,10 +215,10 @@ const Navigation = memo(() => {
                             </div>
                             <div>
                               <div className="font-semibold text-slate-900 mb-1">
-                                Sub-Communities
+                                Communities Map
                               </div>
                               <p className="text-sm text-slate-600">
-                                Regional knowledge keepers
+                               Cultural Migration Map
                               </p>
                             </div>
                           </a>

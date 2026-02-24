@@ -3,7 +3,7 @@ import { useParams } from "next/navigation";
 
 import { Layout } from "@/app/components/botanical/layout/layout";
 import Link from "next/link";
-import { ArrowLeft, BookOpen, Code, Download, ExternalLink, FileText, FlaskConical, Globe, Heart, ImageIcon, Leaf, MapPin, Microscope, Shield, Stethoscope, Users } from "lucide-react";
+import { ArrowLeft, BookOpen, Code, Download, ExternalLink, FileText, FlaskConical, FolderOpen, Globe, Heart, ImageIcon, Leaf, MapPin, Microscope, Shield, Stethoscope, Users } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Hero } from "@/app/components/botanical/sections/hero";
 import { Breadcrumb } from "@/app/components/ui/custom-bread-crumb";
@@ -21,6 +21,9 @@ import { LocationMap } from "@/app/components/botanical/detail/location-map";
 import { JSONExportViewer } from "@/app/components/botanical/detail/JSONLDExport-viewer";
 import { BreadcrumbItem } from "@/lib/types/botanical";
 import ImageGallery from "@/app/components/botanical/detail/image-gallery";
+import { DocumentsStep } from "@/app/components/botanical/forms/steps/documents-step";
+import { PlantFormDraft } from "@/lib/store/plantStore";
+import { DocumentViewer } from "@/app/components/botanical/detail/document-viewer";
 
 
 
@@ -136,6 +139,7 @@ const ResearchDetail = () => {
               {/* Traditional Uses */}
               <motion.div variants={itemVariants}>
                 <ExpandableSection title="Traditional Uses" icon={Users}>
+
                   <ul className="space-y-2">
                     {plant.traditionalUses?.map((use, index) => (
                       <motion.li
@@ -271,12 +275,21 @@ const ResearchDetail = () => {
                     <ImageGallery images={plant.galleryImages} />
                   </ExpandableSection>
 
-                  </motion.div>
+                </motion.div>
 
 
               )
 
               }
+              {/* Documents */}
+              {plant.documents && plant.documents.length > 0 && (
+                <motion.div variants={itemVariants}>
+                  <ExpandableSection title="Documents & Files" icon={FolderOpen}>
+                    <DocumentViewer documents={plant.documents} />
+                  </ExpandableSection>
+                </motion.div>
+              )}
+
 
               {/* Location Map */}
               {plant.locationMetadata && plant.locationMetadata.length > 0 && (
