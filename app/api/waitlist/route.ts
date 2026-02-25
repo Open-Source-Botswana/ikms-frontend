@@ -1,16 +1,13 @@
-import { WaitingListService } from '@/app/utils/supabase/supabase';
-import { WaitlistEntry } from '@/lib/types/waitlist';
+import { WaitingListService } from '@/lib/services/waitlist-service.server';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
-  const body: WaitlistEntry = await request.json();
-  // const validatedData = WaitingListFormSchema.parse(body)
-
-  const entry = await WaitingListService.addToWaitingList(body);
-
-  if (entry.error) {
-    return NextResponse.json({ error: entry.error }, { status: 500 });
-  } else {
-    return NextResponse.json({ success: true }, { status: 201 });
+  try {
+    const body = await request.json();
+    const entry = await WaitingListService.addToWaitingList(body);
+    return NextResponse.json({ success: true, data: entry }, { status: 201 });
+  } catch (error: any) {
+    console.error("Waitlist Error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

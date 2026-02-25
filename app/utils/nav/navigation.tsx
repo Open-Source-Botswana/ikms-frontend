@@ -517,7 +517,7 @@ const Navigation = memo(() => {
                 </NavigationMenuItem>
 
                 {/* Games */}
-                <NavigationMenuItem>
+                {/* <NavigationMenuItem>
                   <NavigationMenuTrigger className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:bg-sky-50 hover:text-sky-900 focus:bg-sky-50 focus:text-sky-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-sky-50/50 data-[state=open]:bg-sky-50/50">
                     Games
                   </NavigationMenuTrigger>
@@ -530,7 +530,7 @@ const Navigation = memo(() => {
                       />
                     </div>
                   </NavigationMenuContent>
-                </NavigationMenuItem>
+                </NavigationMenuItem> */}
 
                 {/* About */}
                 <NavigationMenuItem>
@@ -605,11 +605,11 @@ const Navigation = memo(() => {
               </NavLink>
             </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-sky-100" />
-            <DropdownMenuItem className="hover:bg-sky-50">
+            {/* <DropdownMenuItem className="hover:bg-sky-50">
               <NavLink href="/games" className="w-full text-slate-700">
                 Games
               </NavLink>
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuItem className="hover:bg-sky-50">
               <NavLink href="#story" className="w-full pl-4 text-slate-600">
                 Our Story
