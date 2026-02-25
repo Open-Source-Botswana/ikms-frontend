@@ -13,8 +13,10 @@ import {
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 
 export default function ContributionSection() {
+  const router = useRouter()
   return (
     <div className="container mx-auto px-4 py-8 relative z-10">
       {/* Collaboration Section */}
@@ -64,7 +66,7 @@ export default function ContributionSection() {
                 </Badge>
               </div>
               <Button
-                onClick={() => {}}
+                onClick={() => router.push("waitlist")}
                 className="self-start bg-gradient-to-r from-primary to-emerald-500 hover:from-primary/90 hover:to-emerald-500/90 text-white rounded-full px-6 py-3"
               >
                 Start Collaborating
@@ -293,7 +295,7 @@ export default function ContributionSection() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
-              onClick={() => {}}
+              onClick={() => router.push("waitlist")}
               size="lg"
               className="gap-3 bg-gradient-to-r from-primary to-emerald-500 hover:from-primary/90 hover:to-emerald-500/90 text-white rounded-full px-8 py-4 shadow-lg hover:shadow-xl transition-all"
             >

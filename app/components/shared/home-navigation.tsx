@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 import { navigation } from '@/lib/navigation'
 
 import React from 'react'
-import { Button } from '../ui/button'
+
 
 export default function HomeNavigation() {
   const pathname = usePathname()
@@ -40,7 +40,7 @@ export default function HomeNavigation() {
               })}
             </div>
           </div>
-
+{/*
           <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
             <Button variant="outline" asChild>
               <Link href="/auth/login">Login</Link>
@@ -48,7 +48,7 @@ export default function HomeNavigation() {
             <Button asChild>
               <Link href="/auth/register">Register</Link>
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
     </nav>

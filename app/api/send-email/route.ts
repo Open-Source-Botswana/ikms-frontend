@@ -22,10 +22,10 @@ export async function POST(req: Request) {
           { id: 2, text: 'Exclusive updates and features' },
           { id: 3, text: 'Opportunities to shape the platform' },
         ],
-        supportLinks: [
-          { title: 'Language Learn', href: 'http://34.226.203.226:3000/learn' },
-          { title: 'Community', href: 'http://34.226.203.226:3000/' },
-        ],
+        // supportLinks: [
+        //   { title: 'Language Learn', href: 'http://34.226.203.226:3000/learn' },
+        //   { title: 'Community', href: 'http://34.226.203.226:3000/' },
+        // ],
       }),
     });
 

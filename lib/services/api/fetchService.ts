@@ -1,5 +1,4 @@
 
-import { Form } from "react-hook-form";
 import { tokenService } from "../auth/token.service";
 
 
@@ -45,7 +44,7 @@ export async function fetchWithAuth<T = unknown>(input: RequestInfo, init?: Requ
 
     // console.error(headers)
 
-    const res = await fetch(input, { ...init, headers,});
+    const res = await fetch(input, { ...init, headers, });
     if (!res.ok) {
         const text = await res.text().catch(() => null);
         const error = new Error(`Fetch error: ${res.status} ${res.statusText} - ${text || 'No response body'}`);
@@ -64,7 +63,7 @@ export async function fetchWithAuth<T = unknown>(input: RequestInfo, init?: Requ
 }
 
 
- export async function fetchWithAuthMedia<T = unknown>(input: RequestInfo, init?: RequestInit): Promise<T> {
+export async function fetchWithAuthMedia<T = unknown>(input: RequestInfo, init?: RequestInit): Promise<T> {
 
 
     let token = tokenService.getAccessToken();
@@ -81,7 +80,7 @@ export async function fetchWithAuth<T = unknown>(input: RequestInfo, init?: Requ
         ...(init?.headers as Record<string, string> | undefined),
     };
 
-    const res = await fetch(input, { ...init, headers, credentials: 'same-origin'});
+    const res = await fetch(input, { ...init, headers, credentials: 'same-origin' });
     if (!res.ok) {
         const text = await res.text().catch(() => null);
         const error = new Error(`Fetch error: ${res.status} ${res.statusText} - ${text || 'No response body'}`);
@@ -99,3 +98,65 @@ export async function fetchWithAuth<T = unknown>(input: RequestInfo, init?: Requ
     return (await res.text()) as unknown as T;
 
 };
+
+export async function simpleFetcher<T = unknown>(url: string, init?: RequestInit): Promise<T> {
+    const res = await fetch(url, {
+        ...init,
+        headers: {
+            'Content-Type': 'application/json',
+            ...init?.headers,
+        },
+    })
+    const text = await res.text()
+
+    if (!text) {
+        return {} as T
+    }
+
+    try {
+
+        const json = JSON.parse(text)
+
+
+        if (!res.ok) {
+            throw new Error(json.error?.message || `Request failed: ${res.status}`)
+        }
+
+        return json as T
+    } catch (parseError) {
+
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`)
+        }
+
+        throw parseError
+    }
+
+}
+
+
+export async function fetchWithMeta<T = unknown>(
+  url: string,
+  init?: RequestInit
+): Promise<{ data: T; status: number; headers: Headers }> {
+  const res = await fetch(url, {
+    ...init,
+    headers: {
+      'Content-Type': 'application/json',
+      ...init?.headers,
+    },
+  })
+
+  const text = await res.text()
+  const data = text ? JSON.parse(text) : {}
+
+  if (!res.ok) {
+    throw new Error(data.error?.message || `Request failed: ${res.status}`)
+  }
+
+  return {
+    data: data as T,
+    status: res.status,
+    headers: res.headers,
+  }
+}

@@ -1,43 +1,31 @@
+"use client"
+
+import { Button } from '@/app/components/ui/button'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/app/components/ui/form';
+import { Input } from '@/app/components/ui/input';
+import { MultiSelect } from '@/app/components/ui/multi-select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
+import { useWaitListSubmit } from '@/app/hooks/use-waitlist';
 import { WaitingListFormSchema } from '@/app/utils/schemas/formSchemas/waitingListFormSchema';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import type { z } from 'zod';
+import { WaitlistEntry } from '@/lib/types/waitlist';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
-import { X } from 'lucide-react';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/app/components/ui/form';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react'
+import { useForm } from 'react-hook-form';
+import z from 'zod';
 
-import { Button } from '../ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
-import { MultiSelect } from '../ui/multi-select';
-import { Input } from '../ui/input';
-import { WaitingListService } from '@/app/utils/supabase/supabase';
+export default function WaitListPage() {
 
-type WaitingListModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-};
-export function WaitingListModal({ isOpen, onClose }: WaitingListModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { waitListSubmit } = useWaitListSubmit()
+
+  const router = useRouter()
 
   const form = useForm<z.infer<typeof WaitingListFormSchema>>({
     resolver: zodResolver(WaitingListFormSchema),
     defaultValues: {
-      researchPurpose: '',
+      research_purpose: undefined,
       organization: '',
       interests: [],
       useremail: '',
@@ -45,9 +33,6 @@ export function WaitingListModal({ isOpen, onClose }: WaitingListModalProps) {
     },
   });
 
-  if (!isOpen) {
-    return null;
-  }
 
   const interestOptions = [
     { label: 'Indigenous Knowledge', value: 'indigenous-knowledge' },
@@ -63,8 +48,9 @@ export function WaitingListModal({ isOpen, onClose }: WaitingListModalProps) {
   const onSubmit = async (data: z.infer<typeof WaitingListFormSchema>) => {
     setIsSubmitting(true);
     try {
+      await waitListSubmit(data as WaitlistEntry)
 
-      await WaitingListService.addToWaitingList(data);
+      // await WaitingListService.addToWaitingList(data);
 
 
       const res = await fetch('/api/send-email', {
@@ -79,7 +65,7 @@ export function WaitingListModal({ isOpen, onClose }: WaitingListModalProps) {
       }
 
       form.reset();
-      onClose();
+      router.push("/")
     } catch (error) {
       console.error('Error submitting onboarding data:', error, data);
     } finally {
@@ -94,12 +80,7 @@ export function WaitingListModal({ isOpen, onClose }: WaitingListModalProps) {
         exit={{ opacity: 0, scale: 0.95 }}
         className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800"
       >
-        <button
-          onClick={onClose}
-          className="absolute right-4 top-4 rounded-full p-1 text-red-500  hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
-        >
-          <X className="h-5 w-5" />
-        </button>
+
 
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -115,7 +96,7 @@ export function WaitingListModal({ isOpen, onClose }: WaitingListModalProps) {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="researchPurpose"
+              name="research_purpose"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Purpose of Research</FormLabel>
