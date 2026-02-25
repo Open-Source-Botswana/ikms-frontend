@@ -73,13 +73,13 @@ export const WaitingListEmail = ({
               </Section>
             )}
 
-            <Section className="text-center my-8">
+            {/* <Section className="text-center my-8">
               <Button className="bg-[#2138c6] text-white border-0 text-[15px] leading-[18px] cursor-pointer rounded p-3" href="http://34.226.203.226:3000/">
 
                 <strong>Visit Our Site</strong>
 
               </Button>
-            </Section>
+            </Section> */}
 
             {supportLinks.length > 0 && (
               <Section className="mt-10">

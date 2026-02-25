@@ -17,7 +17,7 @@ export default function HomeNavigation() {
     { href: '/browse', label: 'Browse' },
     // { href: '/analytics', label: 'Analytics'},
     // { href: '/dashboard', label: 'Dashboard' },
-    { href: '/games', label: 'Games' },
+    // { href: '/games', label: 'Games' },
     { href: '/contribute', label: 'Contribute' },
     { href: '/publications', label: 'Publications' },
     { href: '/botanical', label: 'Botanical-Explorer' },
