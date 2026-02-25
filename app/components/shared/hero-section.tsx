@@ -5,6 +5,7 @@ import { Button } from '@/app/components/ui/button'
 import { heroData } from '@/lib/hero_data'
 import { Heart, Star } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 
 // import { motion } from 'motion/react';
 interface FloatingElementProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -45,6 +46,8 @@ const FloatingElement: React.FC<FloatingElementProps> = ({
   )
 }
 export function HeroSection() {
+
+  const route = useRouter()
   return (
     <section className="relative pt-32 pb-24 md:pt-48 md:pd-32 overflow-hidden">
       <div className="absolute inset-0 -z-10 overflow-hidden">
@@ -95,11 +98,11 @@ export function HeroSection() {
           >
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
-                onClick={() => {}}
+                onClick={() => {route.push("/waitlist")}}
                 size="lg"
                 className="gap-3 bg-gradient-to-r from-amber-700 to-amber-300 hover:from-primary/90 hover:to-emerald-500/90 text-white rounded-full px-8 py-4 shadow-lg hover:shadow-xl transition-all"
               >
-                🌱 Request to Contribute
+                🌱 Join WaitList
               </Button>
               <Button
                 variant="outline"

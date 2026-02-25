@@ -1,16 +1,19 @@
-import { monthlySubmissions } from './../mock/articles';
-import { categories } from './../mock/categoryStats';
-import { languageItemDifficuly } from './../../../lib/types/languages';
+
 import { FeedbackItem, FeedbackStatus, RiddleFormValues, RiddleItem, RiddleMetrics } from "@/lib/types/folklore";
 import { createClient } from "@supabase/supabase-js";
-import z from "zod";
-import { WaitingListFormData, WaitingListFormSchema } from "../schemas/formSchemas/waitingListFormSchema";
+
+import { WaitingListFormSchema } from "../schemas/formSchemas/waitingListFormSchema";
 import { FolkloreComment } from '@/lib/types/comments';
+import { WaitlistApiResponse, WaitlistEntry } from '@/lib/types/waitlist';
+import { NextResponse } from 'next/server';
+import { createClerkClient } from '@clerk/nextjs/server';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
 
 export const supabase = createClient(supabaseUrl!, supabaseKey!)
+
+const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY })
 
 export class FeedbackService {
   static async createFeedback(feedback: FeedbackItem): Promise<FeedbackItem> {
@@ -101,11 +104,11 @@ export class FeedbackService {
     }
   }
 
-  static async updateFeedbackStatus(id: string, newstatus:FeedbackStatus, status_comment?:string): Promise<FeedbackItem> {
+  static async updateFeedbackStatus(id: string, newstatus: FeedbackStatus, status_comment?: string): Promise<FeedbackItem> {
     try {
       const { data, error } = await supabase
         .from('folklore_feedback')
-        .update({ status_enum: newstatus, status_comment: status_comment??null })
+        .update({ status_enum: newstatus, status_comment: status_comment ?? null })
         .eq('id', id)
         .select()
         .single();
@@ -162,8 +165,8 @@ export class FolkloreRiddlesService {
     }
   }
 
-  static async softDeleteItemById(riddleId: string){
-    const {error} = await supabase.from('language_riddles_items').update({is_deleted:true}).eq('id', riddleId)
+  static async softDeleteItemById(riddleId: string) {
+    const { error } = await supabase.from('language_riddles_items').update({ is_deleted: true }).eq('id', riddleId)
 
     if (error) throw error
   }
@@ -176,15 +179,44 @@ export class FolkloreRiddlesService {
 //   created_at: string;
 // }
 
+
+/**
+ * WaitList
+ */
 export class WaitingListService {
 
   static TABLE = "waiting_list";
-  static async addToWaitingList(userData: WaitingListFormData): Promise<WaitingListFormData> {
+  static async addToWaitingList(userData: WaitlistEntry): Promise<WaitlistEntry> {
+
+
+    const validatedData = WaitingListFormSchema.parse(userData)
+    const { data: existing } = await supabase
+      .from('waitlist_entries')
+      .select('id, status')
+      .eq('useremail', validatedData.useremail)
+      .neq('status', 'archived')
+      .maybeSingle()
+
+    if (existing) {
+      throw NextResponse.json<WaitlistApiResponse>(
+        {
+          success: false,
+          error: {
+            code: 'DUPLICATE_EMAIL',
+            message: 'This email is already on the waitlist.',
+            field: 'useremail'
+          }
+        },
+        { status: 409 }
+      )
+    }
+
+
     try {
       const { data, error } = await supabase
         .from(this.TABLE)
         .insert({
-          researchpurpose: userData.researchPurpose,
+          researchpurpose: userData.research_purpose,
           username: userData.username,
           organization: userData.organization,
           interests: userData.interests,
@@ -195,7 +227,42 @@ export class WaitingListService {
         .single();
 
       if (error) throw error;
-      return data as WaitingListFormData;
+
+      await clerkClient.waitlistEntries.create({
+        emailAddress: validatedData.useremail,
+        notify: true,
+      }).catch(err => {
+        console.warn('Clerk waitlist update failed:', err)
+        return null
+      });
+
+      //   const [clerkResult, emailResult] = await Promise.allSettled([
+
+      //   clerkClient.waitlistEntries.create({
+      //     emailAddress: validatedData.useremail,
+      //     notify: true,
+      //   }).catch(err => {
+      //     console.warn('Clerk waitlist update failed:', err)
+      //     return null
+      //   }),
+
+      //        resend.emails.send({
+      //     from: 'Waitlist <onboarding@yourdomain.com>',
+      //     to: validatedData.useremail,
+      //     subject: 'Welcome to the Waitlist! 🎉',
+      //     react: WelcomeEmail({
+      //       username: validatedData.username,
+      //       interests: validatedData.interests,
+      //       researchPurpose: validatedData.researchPurpose,
+      //     }),
+      //   }).catch(err => {
+      //     console.warn('Resend email failed:', err)
+      //     return null
+      //   })
+      // ])
+
+
+      return data as WaitlistEntry;
     } catch (error) {
       console.error('Error creating waiting list:', error);
       throw error instanceof Error ? error : new Error('Failed to submit waiting list');
@@ -211,7 +278,7 @@ export class RiddleMetricsService {
     startOfMonth.setDate(1);
 
     const [
-      total, approved, pending, rejected, languages,categories, monthlySubmissions
+      total, approved, pending, rejected, languages, categories, monthlySubmissions
     ] = await Promise.all([
       supabase.from('language_riddles_items').select('*', { count: 'exact', head: true }),
       supabase.from('language_riddles_items').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
@@ -220,14 +287,14 @@ export class RiddleMetricsService {
       supabase.from('language_riddles_items').select('language', { count: 'exact', head: true }),
       supabase.from('language_riddles_items').select('category', { count: 'exact', head: true }),
       supabase.from('language_riddles_items')
-      .select('*', { count: 'exact', head: true })
-      .gte('created_at', startOfMonth.toISOString()),
+        .select('*', { count: 'exact', head: true })
+        .gte('created_at', startOfMonth.toISOString()),
     ]);
 
 
     // if (error) throw error;
     return {
-            totalRiddles: total.count ?? 0,
+      totalRiddles: total.count ?? 0,
       approvedRiddles: approved.count ?? 0,
       pendingRiddles: pending.count ?? 0,
       rejectedRiddles: rejected.count ?? 0,
@@ -260,7 +327,7 @@ export class FolkloreCommentsService {
     }
   }
 
-  static async getCommentWithVotesByItemId(itemId:string): Promise<FolkloreComment[]>{
+  static async getCommentWithVotesByItemId(itemId: string): Promise<FolkloreComment[]> {
     try {
       const { data, error } = await supabase
         .rpc('get_comments_with_votes', { item_id: itemId });

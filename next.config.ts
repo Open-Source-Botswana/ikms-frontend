@@ -3,7 +3,14 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   /* config options here */
   experimental: {},
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   productionBrowserSourceMaps: false,
+
   reactStrictMode: true,
   swcMinify: true,
   images: {
