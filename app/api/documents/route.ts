@@ -2,7 +2,7 @@ import { PaperlessService } from "@/lib/services/paperless/paperless";
 import { NextResponse } from "next/server";
 
 
-export async function GET(request: Request, { params }: { params: { id: string }}){
+export async function GET(request: Request){
 
     const paperlessService = new PaperlessService(process.env.PAPERLESS_SEARCH_URL, process.env.PAPERLESS_API_TOKEN);
     try {
