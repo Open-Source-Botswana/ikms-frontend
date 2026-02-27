@@ -37,7 +37,7 @@ export default function CommunitiesSection() {
                             transition={{ delay: index * 0.15, duration: 0.5 }}
                         >
                             <Link
-                                href={`/community/${community.id}`}
+                                href={`/communities/${community.id}`}
                                 className="group block relative overflow-hidden rounded-xl border border-border bg-card card-hover"
                             >
                                 <div className="aspect-[16/10] overflow-hidden relative">

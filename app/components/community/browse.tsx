@@ -9,15 +9,17 @@ import { Button } from '../ui/button';
 import { Hero } from '../botanical/sections/hero';
 import { Badge } from '../ui/badge';
 import { useAppCommunityStore } from '@/lib/store/appCommunityStore';
+import { Alert, AlertDescription } from '../ui/alert';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 
 
 export default function CommunitiesBrowse() {
 
-    const {communities} = useAppCommunityStore()
+  const { communities } = useAppCommunityStore()
   return (
-        <div className="min-h-screen">
+    <div className="min-h-screen">
 
-        <Hero
+      <Hero
         title="Botho: Our Heritage, Our Future"
         subtitle="A community-led indigenous knowledge management system preserving the cultural heritage of Botswana's diverse communities"
         backgroundImage={"/assets/siteImages/bg-kalahari.jpg"}
@@ -41,6 +43,23 @@ export default function CommunitiesBrowse() {
 
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
+
+      <Card className="border-amber-200 bg-amber-50 mb-4">
+        <CardHeader>
+          <CardTitle className="text-amber-800 flex items-center space-x-2">
+            <span>Cultural Protocols</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-amber-700 text-sm">
+            All traditional knowledge in this portal is shared according to
+            Indigenous cultural protocols. Some content may have access
+            restrictions based on cultural sensitivity, ceremonial significance,
+            or community governance decisions. Please respect Traditional
+            Knowledge (TK) Labels and access guidelines.
+          </p>
+        </CardContent>
+        </Card>
           <div className="flex items-center justify-between mb-10">
             <div>
               <h2 className="section-title text-black/80">Communities</h2>
@@ -170,6 +189,6 @@ export default function CommunitiesBrowse() {
         </div>
       </section>
 
-        </div>
+    </div>
   )
 }
