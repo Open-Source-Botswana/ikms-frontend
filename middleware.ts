@@ -15,7 +15,14 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 //     publicRoutes: ['/'],
 // })
 
-export default clerkMiddleware()
+const isProtectedAdminRoutes = createRouteMatcher(['/admin(.*)','/ethnobotany(.*)', '/patents(.*)'])
+
+export default clerkMiddleware(async (auth, req) => {
+  const { isAuthenticated, redirectToSignIn } = await auth()
+  if (!isAuthenticated && isProtectedAdminRoutes(req)) {
+    return redirectToSignIn()
+  }
+})
 export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params
